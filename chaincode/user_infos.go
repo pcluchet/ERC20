@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -40,5 +41,5 @@ func balanceOf(stub shim.ChaincodeStubInterface, args []string) (string, error) 
 		return "", err
 	}
 
-	return fmt.Sprintf("%s", usrInfos.Amount), nil
+	return fmt.Sprintf("%s", strconv.FormatUint(usrInfos.Amount, 10)), nil
 }
