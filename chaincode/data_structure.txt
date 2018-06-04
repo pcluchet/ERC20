@@ -35,12 +35,11 @@ Evenements transfer :
 (key , value) = ("transfers", JSON_3 )
 
 JSON_3 de forme : 
-{"txid" : "TRANSACTION_ID", "from" : "SPENDER_PUBLIC_KEY", "to" : "RECEIPIENT_PUBLIC_KEY", "amount" : 42}
-
+{ "from" : "SPENDER_PUBLIC_KEY", "to" : "RECEIPIENT_PUBLIC_KEY", "amount" : 42}
 
 
 Evenements approval :
 (key , value) = ("approvals", JSON_4 )
 
 JSON_4 de forme : 
-{"txid" : "TRANSACTION_ID", "tokenOwner" : "TOKEN_OWNER_PUBLIC_KEY", "spender" : "SPENDER_PUBLIC_KEY", "amount" : 42}
+{ "tokenOwner" : "TOKEN_OWNER_PUBLIC_KEY", "spender" : "SPENDER_PUBLIC_KEY", "amount" : 42}
