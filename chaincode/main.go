@@ -23,9 +23,8 @@ func	(t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 	fct, argv = stub.GetFunctionAndParameters()
 	fmt.Println("---------------> Invoke <---------------")
-	fmt.Println()
-	fmt.Println(fct)
 	fmt.Println(argv)
+	STUB = stub
 
 	switch fct {
 		default:
