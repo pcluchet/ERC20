@@ -32,14 +32,14 @@ Les clés des event contiennent tout le temps la dernière transaction effectué
 On utilise getHistoryForKey pour avoir une capacité d'audit
 
 Evenements transfer :
-(key , value) = ("transfers", JSON_3 )
+(key , value) = ("transfer", JSON_3 )
 
 JSON_3 de forme : 
 { "from" : "SPENDER_PUBLIC_KEY", "to" : "RECEIPIENT_PUBLIC_KEY", "amount" : 42}
 
 
 Evenements approval :
-(key , value) = ("approvals", JSON_4 )
+(key , value) = ("approval", JSON_4 )
 
 JSON_4 de forme : 
 { "tokenOwner" : "TOKEN_OWNER_PUBLIC_KEY", "spender" : "SPENDER_PUBLIC_KEY", "amount" : 42}
