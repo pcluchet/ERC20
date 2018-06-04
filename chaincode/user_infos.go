@@ -56,6 +56,17 @@ func allowanceOfUser(allowanceList AllowanceCouples, spender string) (uint64, er
 	return 0, fmt.Errorf("Spender not found, maybe he is not allowed by given user")
 }
 
+//returns the index of a said spender in an allowance list, -1 if not found
+func indexOfSpender(allowanceList AllowanceCouples, spender string) int {
+
+	for key, value := range allowanceList {
+		if value.Spender == spender {
+			return key
+		}
+	}
+	return -1
+}
+
 func allowance(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	// TODO :
 	// [ ] User is a valid user, or check pubkey validity or whatever
