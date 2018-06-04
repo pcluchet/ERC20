@@ -4,8 +4,8 @@ readonly BASE="peer chaincode invoke -o orderer.example.com:7050"
 readonly TLS="--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
 
 readonly fct=("totalSupply" "balanceOf" "allowance" "transfer" "approve" "transferFrom" "getState")
-readonly usage=("io tsp" "io blo [address tokenOwner]" "io alo [address tokenOwner] [address spender]"	\
-				"io trs [address to] [uint tokens]" "io apr [address spender] [uint tokens]"			\
+readonly usage=("io tsp" "io blo [address tokenOwner]" "io alo [address tokenOwner] [address spender]"		\
+				"io trs [address to] [uint tokens] [publicKey]" "io apr [address spender] [uint tokens]"	\
 				"io trf [address from] [address to] [uint tokens]" "io get [key]")
 
 # **************************************************************************** #
@@ -72,11 +72,11 @@ function	allowance {
 }
 
 function	transfer {
-	if [ $1 ] && [ $2 ]; then
+	if [ $1 ] && [ $2 ] && [ $3 ]; then
 		echo "---------------> Transfer to $1 of $2 📲  <---------------"
 		echo ""
 
-		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"transfer\", \"$1\", \"$2\"]}"`
+		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"transfer\", \"$1\", \"$2\", \"$3\"]}"`
 	else
 		fctUsage 3 ": "
 	fi
@@ -119,7 +119,7 @@ case $1 in
 	alo)
 		allowance $2 $3 ;;
 	trs)
-		transfer $2 $3 ;;
+		transfer $2 $3 $4 ;;
 	apr)
 		approve $2 $3 ;;
 	trf)

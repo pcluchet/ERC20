@@ -18,8 +18,8 @@ type UserInfos struct {
 }
 
 type Events struct {
-	Owner		string
-	Spender		string
+	From		string
+	To			string
 	Value		uint64
 }
 

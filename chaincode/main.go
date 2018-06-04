@@ -15,6 +15,12 @@ import (
 func (t *SimpleAsset) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	fmt.Println("---------------> Init <---------------")
 
+	// TEMPORARY
+	err := stub.PutState("alice",[]byte(`{"amount" : 42, "allowances" : [{"spender" : "SPENDER", "amount" : 21}]}`))
+	if err != nil {
+		return shim.Error("")
+	}
+
 	return shim.Success(nil)
 }
 
@@ -25,9 +31,8 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	var err error
 
 	fct, argv = stub.GetFunctionAndParameters()
-	fmt.Println("---------------> Invoke <---------------")
-	fmt.Println(argv)
 	STUB = stub
+	fmt.Println("---------------> Invoke <---------------")
 
 	switch fct {
 	case "set":
@@ -38,6 +43,8 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		ret, err = balanceOf(stub, argv)
 	case "allowance":
 		ret, err = allowance(stub, argv)
+	case "transfer":
+		ret, err = transfer(argv)
 	case "approve":
 		ret, err = approve(stub, argv)
 	default:

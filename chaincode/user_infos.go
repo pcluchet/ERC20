@@ -1,13 +1,26 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
+
+func (self UserInfos) Set(publicKey string) error {
+	var ret		[]byte
+	var err		error
+
+	if ret, err = json.Marshal(self); err != nil {
+		return err
+	}
+	if err = STUB.PutState(publicKey, ret); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func getUserInfos(stub shim.ChaincodeStubInterface, userPublicKey string) (UserInfos, error) {
 	var user UserInfos
@@ -19,12 +32,10 @@ func getUserInfos(stub shim.ChaincodeStubInterface, userPublicKey string) (UserI
 	if value == nil {
 		return user, fmt.Errorf("Asset not found: %s", userPublicKey)
 	}
-
-	b := bytes.NewReader(value)
-	err = json.NewDecoder(b).Decode(&user)
-	if err != nil {
-		return user, fmt.Errorf("Failed to decode user json : %s", userPublicKey)
+	if err = json.Unmarshal(value, &user); err != nil {
+		return user, err
 	}
+
 	return user, nil
 }
 
