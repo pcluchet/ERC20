@@ -3,10 +3,10 @@
 readonly BASE="peer chaincode invoke -o orderer.example.com:7050"
 readonly TLS="--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
 
-readonly fct=("totalSupply" "balanceOf" "allowance" "transfer" "approve" "transferFrom")
-readonly usage=("io tsp" "io blo [address tokenOwner]" "io alo [address tokenOwner] [address spender]"			\
-				"io trs [address to] [uint tokens]" "io apr [address spender] [uint tokens]"					\
-				"io trf [address from] [address to] [uint tokens]")
+readonly fct=("totalSupply" "balanceOf" "allowance" "transfer" "approve" "transferFrom" "getState")
+readonly usage=("io tsp" "io blo [address tokenOwner]" "io alo [address tokenOwner] [address spender]"	\
+				"io trs [address to] [uint tokens]" "io apr [address spender] [uint tokens]"			\
+				"io trf [address from] [address to] [uint tokens]" "io get [key]")
 
 # **************************************************************************** #
 #			USAGE															   #
@@ -22,7 +22,7 @@ function	basicUsage {
 	echo "----------> Usage 🔖  <----------" 
 	echo ""
 
-	for index in 0 1 2 3 4 5 ; do
+	for index in 0 1 2 3 4 5 6 ; do
 		fctUsage $index ":\t"
 	done
 }
@@ -30,6 +30,17 @@ function	basicUsage {
 # **************************************************************************** #
 #			PRIVATE															   #
 # **************************************************************************** #
+
+function	get {
+	if [ $1 ]; then
+		echo "---------------> Get [$1] 🙈  <---------------"
+		echo ""
+
+		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"get\", \"$1\"]}"`
+	else
+		fctUsage 6 ": "
+	fi
+}
 
 function	totalSupply {
 	echo "---------------> Total Supply 💰  <---------------"
@@ -99,6 +110,8 @@ function	transferFrom {
 # **************************************************************************** #
 
 case $1 in
+	get)
+		get $2 ;;
 	tsp)
 		totalSupply ;;
 	blo)
