@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"strconv"
-)
+import "fmt"
 
 /* ************************************************************************** */
 /*		PRIVATE																  */
@@ -46,19 +43,16 @@ func changeStateFrom(from string, amount uint64) error {
 /*		PUBLIC																  */
 /* ************************************************************************** */
 
+// To do [Change authentification of argv[2] with getCreator->getPublicKey]
+
 func transfer(argv []string) (string, error) {
 	var err error
 	var amount uint64
 
-	if len(argv) != 3 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a 3 (last one is user)")
-	}
-
-	if amount, err = strconv.ParseUint(argv[1], 10, 64); err != nil {
+	if err = parseArgv(argv, "transfer"); err != nil {
 		return "", err
 	}
-
-	if err = parser(argv, amount); err != nil {
+	if amount, err = parseFund(argv[1], argv[2]); err != nil {
 		return "", err
 	}
 	if err = changeStateFrom(argv[2], amount); err != nil {
@@ -71,5 +65,5 @@ func transfer(argv []string) (string, error) {
 		return "", err
 	}
 
-	return "", nil
+	return fmt.Sprintf("Successfull transaction from [%s] to [%s]", argv[0], argv[2]), nil
 }
