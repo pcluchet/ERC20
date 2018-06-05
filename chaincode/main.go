@@ -16,7 +16,7 @@ func (t *SimpleAsset) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	fmt.Println("---------------> Init <---------------")
 
 	// TEMPORARY
-	err := stub.PutState("alice",[]byte(`{"amount" : 42, "allowances" : [{"spender" : "SPENDER", "amount" : 21}]}`))
+	err := stub.PutState("alice",[]byte(`{"amount" : 42, "allowances" : {}}`))
 	if err != nil {
 		return shim.Error("")
 	}
