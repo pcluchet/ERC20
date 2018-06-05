@@ -30,9 +30,9 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	var ret string
 	var err error
 
+	fmt.Println("---------------> Invoke <---------------")
 	fct, argv = stub.GetFunctionAndParameters()
 	STUB = stub
-	fmt.Println("---------------> Invoke <---------------")
 
 	switch fct {
 	case "set":
@@ -45,6 +45,8 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		ret, err = allowance(stub, argv)
 	case "transfer":
 		ret, err = transfer(argv)
+	case "transferFrom":
+		ret, err = transferFrom(argv)
 	case "approve":
 		ret, err = approve(stub, argv)
 	default:
