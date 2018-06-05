@@ -1,14 +1,17 @@
 package main
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 /* ************************************************************************** */
 /*		PRIVATE																  */
 /* ************************************************************************** */
 
-func	changeStateTo(to string, amount uint64) error {
-	var user	UserInfos
-	var err		error
+func changeStateTo(to string, amount uint64) error {
+	var user UserInfos
+	var err error
 
 	if user, err = getUserInfos(STUB, to); err == nil {
 		user.Amount += amount
@@ -23,9 +26,9 @@ func	changeStateTo(to string, amount uint64) error {
 	return nil
 }
 
-func	changeStateFrom(from string, amount uint64) error {
-	var user	UserInfos
-	var err		error
+func changeStateFrom(from string, amount uint64) error {
+	var user UserInfos
+	var err error
 
 	if user, err = getUserInfos(STUB, from); err != nil {
 		return err
@@ -43,9 +46,13 @@ func	changeStateFrom(from string, amount uint64) error {
 /*		PUBLIC																  */
 /* ************************************************************************** */
 
-func	transfer(argv []string) (string, error) {
-	var err		error
-	var amount	uint64
+func transfer(argv []string) (string, error) {
+	var err error
+	var amount uint64
+
+	if len(argv) != 3 {
+		return "", fmt.Errorf("Incorrect arguments. Expecting a 3 (last one is user)")
+	}
 
 	if amount, err = strconv.ParseUint(argv[1], 10, 64); err != nil {
 		return "", err
