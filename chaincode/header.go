@@ -5,16 +5,9 @@ import "github.com/hyperledger/fabric/core/chaincode/shim"
 type SimpleAsset struct {
 }
 
-type AllowanceCouple struct {
-	Spender string
-	Amount  uint64
-}
-
-type AllowanceCouples []AllowanceCouple
-
 type UserInfos struct {
 	Amount     uint64
-	Allowances AllowanceCouples
+	Allowances map[string]uint64
 }
 
 type Events struct {

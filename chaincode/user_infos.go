@@ -56,27 +56,21 @@ func balanceOf(stub shim.ChaincodeStubInterface, args []string) (string, error) 
 }
 
 //returns the amount of an allowance matching given spender in a allowanceouple list
-func allowanceOfUser(allowanceList AllowanceCouples, spender string) (uint64, error) {
+func allowanceOfUser(userInfos UserInfos, spender string) (uint64, error) {
+	var	amount	uint64
+	var	exist	bool
 
-	for _, value := range allowanceList {
-		if value.Spender == spender {
-			return value.Amount, nil
-		}
+	amount, exist = userInfos.Allowances[spender]
+	if exist == false {
+		return 0, fmt.Errorf("Spender not found, maybe he is not allowed by given user")
 	}
-
-	return 0, fmt.Errorf("Spender not found, maybe he is not allowed by given user")
+	return amount, nil
 }
 
 //returns the index of a said spender in an allowance list, -1 if not found
-func indexOfSpender(allowanceList AllowanceCouples, spender string) int {
-
-	for key, value := range allowanceList {
-		if value.Spender == spender {
-			return key
-		}
-	}
-	return -1
-}
+//func indexOfSpender(allowanceList AllowanceCouples, spender string) int {
+//	return -1
+//}
 
 func allowance(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	// TODO :
@@ -91,7 +85,7 @@ func allowance(stub shim.ChaincodeStubInterface, args []string) (string, error) 
 		return "", err
 	}
 
-	value, err0 := allowanceOfUser(usrInfos.Allowances, args[1])
+	value, err0 := allowanceOfUser(usrInfos, args[1])
 	if err0 != nil {
 		return "", err0
 	}
