@@ -1,42 +1,31 @@
 package main
 
 import "fmt"
+import "strconv"
 
 /* ************************************************************************** */
 /*		PRIVATE																  */
 /* ************************************************************************** */
 
-func changeStateTo(to string, amount uint64) error {
+func	parseTransfer(str string, publicKey string) (uint64, error) {
+	var amount uint64
 	var user UserInfos
-	var err error
+	var err	error
 
-	if user, err = getUserInfos(STUB, to); err == nil {
-		user.Amount += amount
-	} else {
-		user.Amount = amount
+	if amount, err = strconv.ParseUint(str, 10, 64); err != nil {
+		return 0, err
+	}
+	if amount == 0 {
+		return 0, fmt.Errorf("Cannot send 0 value")
+	}
+	if user, err = getUserInfos(STUB, publicKey); err != nil {
+		return 0, err
+	}
+	if amount > user.Amount {
+		return 0, fmt.Errorf("Insufficent fund")
 	}
 
-	if err = user.Set(to); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func changeStateFrom(from string, amount uint64) error {
-	var user UserInfos
-	var err error
-
-	if user, err = getUserInfos(STUB, from); err != nil {
-		return err
-	}
-	user.Amount -= amount
-
-	if err = user.Set(from); err != nil {
-		return err
-	}
-
-	return nil
+	return amount, nil
 }
 
 /* ************************************************************************** */
@@ -52,10 +41,10 @@ func transfer(argv []string) (string, error) {
 	if err = parseArgv(argv, "transfer"); err != nil {
 		return "", err
 	}
-	if amount, err = parseFund(argv[1], argv[2]); err != nil {
+	if amount, err = parseTransfer(argv[1], argv[2]); err != nil {
 		return "", err
 	}
-	if err = changeStateFrom(argv[2], amount); err != nil {
+	if err = changeStateFrom(argv[2], argv[0], amount, _transfer); err != nil {
 		return "", err
 	}
 	if err = changeStateTo(argv[0], amount); err != nil {
@@ -65,5 +54,5 @@ func transfer(argv []string) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("Successfull transaction from [%s] to [%s]", argv[0], argv[2]), nil
+	return fmt.Sprintf("Successfull transaction from [%s] to [%s]", argv[2], argv[0]), nil
 }

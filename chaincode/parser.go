@@ -1,8 +1,6 @@
 package main
 
 import "fmt"
-import "strconv"
-
 
 /* ************************************************************************** */
 /*		PRIVATE																  */
@@ -47,25 +45,4 @@ func	parseArgv(argv []string, typeofTx string) error {
 	}
 
 	return nil
-}
-
-func	parseFund(str string, publicKey string) (uint64, error) {
-	var amount uint64
-	var user UserInfos
-	var err	error
-
-	if amount, err = strconv.ParseUint(str, 10, 64); err != nil {
-		return 0, err
-	}
-	if amount == 0 {
-		return 0, fmt.Errorf("Cannot send 0 value")
-	}
-	if user, err = getUserInfos(STUB, publicKey); err != nil {
-		return 0, err
-	}
-	if amount > user.Amount {
-		return 0, fmt.Errorf("Insufficent fund [%d > %d]", amount, user.Amount)
-	}
-
-	return amount, nil
 }
