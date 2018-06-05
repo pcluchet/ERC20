@@ -11,6 +11,8 @@
 
 JSON_1 de forme : 
 {"amount" : 42, "allowances" : [{"spender" : "SPENDER", "amount" : 21}] }
+update:
+{"amount" : 42, "allowances" : {"spender_1": 21, "spender_2": 14, ...} }
 
 
 

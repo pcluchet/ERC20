@@ -1,19 +1,22 @@
-package main
+package	main
 
-import "github.com/hyperledger/fabric/core/chaincode/shim"
+import	"github.com/hyperledger/fabric/core/chaincode/shim"
 
-type SimpleAsset struct {
+type	SimpleAsset	struct {
 }
 
-type UserInfos struct {
-	Amount     uint64
-	Allowances map[string]uint64
+type	UserInfos	struct {
+		Amount		uint64
+		Allowances	map[string]uint64
 }
 
-type Events struct {
-	From		string
-	To			string
-	Value		uint64
+type	Events		struct {
+		From		string
+		To			string
+		Value		uint64
 }
 
-var STUB shim.ChaincodeStubInterface
+var		STUB shim.ChaincodeStubInterface
+
+const	centralBankName			string = "central_bank"
+const	centralBankTotalSupply	uint64 = 100000

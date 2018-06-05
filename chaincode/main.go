@@ -1,12 +1,9 @@
 package main
 
-import (
-	"fmt"
-	"os"
-
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/hyperledger/fabric/protos/peer"
-)
+import	"fmt"
+import	"os"
+import	"github.com/hyperledger/fabric/core/chaincode/shim"
+import	"github.com/hyperledger/fabric/protos/peer"
 
 /* ************************************************************************** */
 /*		PUBLIC																  */
@@ -14,13 +11,20 @@ import (
 
 func (t *SimpleAsset) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	fmt.Println("---------------> Init <---------------")
+	var err				error
+	var	bankString		string
 
-	// TEMPORARY
-	err := stub.PutState("alice",[]byte(`{"amount" : 42, "allowances" : {}}`))
+	// SET CENTRAL BANK SUPPLY
+	bankString = fmt.Sprintf("{\"amount\":%v,\"allowances\":{}}", centralBankTotalSupply)
+	err = stub.PutState(centralBankName, []byte(bankString))
 	if err != nil {
-		return shim.Error("")
+		return shim.Error("Cannot set central bank")
 	}
-
+	// SET TOTAL SUPPLY
+	err = stub.PutState("total_supply", []byte(string(centralBankTotalSupply)))
+	if err != nil {
+		return shim.Error("Cannot set ledger total supply")
+	}
 	return shim.Success(nil)
 }
 
