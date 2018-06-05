@@ -1,7 +1,6 @@
 package	main
 
 import	"fmt"
-import	"github.com/hyperledger/fabric/core/chaincode/shim"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// STATIC FUNCTIONS ///////////////////////////////////////////////////////////
@@ -11,11 +10,11 @@ import	"github.com/hyperledger/fabric/core/chaincode/shim"
 /// PUBLIC FUNCTION ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-func		totalSupply(stub shim.ChaincodeStubInterface) (string, error) {
+func		totalSupply() (string, error) {
 	var	err		error
 	var	amount	[]byte
 
-	amount, err = stub.GetState("total_supply")
+	amount, err = STUB.GetState("total_supply")
 	if err != nil {
 		return "", fmt.Errorf("Cannot get total supply: %s", err)
 	}

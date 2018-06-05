@@ -1,12 +1,8 @@
 package main
 
-import (
-	"encoding/json"
-	"fmt"
-	"strconv"
-
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-)
+import	"encoding/json"
+import	"fmt"
+import	"strconv"
 
 func generateJSON(infos UserInfos) ([]byte, error) {
 	var	jsBytes		[]byte
@@ -19,7 +15,7 @@ func generateJSON(infos UserInfos) ([]byte, error) {
 	return jsBytes, nil
 }
 
-func approve(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+func approve(args []string) (string, error) {
 	// TODO :
 	// [ ] real user implementation
 	// [ ] check if spender is real/valid user
@@ -37,7 +33,7 @@ func approve(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 	}
 	// GET USER INFOS
 	userKey = args[2]
-	userInfos, err = getUserInfos(stub, userKey)
+	userInfos, err = getUserInfos(userKey)
 	if err != nil {
 		return "", err
 	}
@@ -57,7 +53,7 @@ func approve(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 		return "", err
 	}
 	// PUT STRINGIFIED INFOS TO LEDGER
-	err = stub.PutState(userKey, jsBytes)
+	err = STUB.PutState(userKey, jsBytes)
 	if err != nil {
 		return "", err
 	}

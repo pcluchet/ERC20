@@ -23,7 +23,7 @@ func changeStateTo(to string, amount uint64) error {
 	var user UserInfos
 	var err error
 
-	if user, err = getUserInfos(STUB, to); err == nil {
+	if user, err = getUserInfos(to); err == nil {
 		user.Amount += amount
 	} else {
 		user.Amount = amount
@@ -41,7 +41,7 @@ func changeStateFrom(from string, to string, amount uint64, fct TransferFCT) err
 	var user UserInfos
 	var err error
 
-	if user, err = getUserInfos(STUB, from); err != nil {
+	if user, err = getUserInfos(from); err != nil {
 		return err
 	}
 	fct(&user, to, amount)

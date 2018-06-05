@@ -18,7 +18,7 @@ func	parseTransfer(str string, publicKey string) (uint64, error) {
 	if amount == 0 {
 		return 0, fmt.Errorf("Cannot send 0 value")
 	}
-	if user, err = getUserInfos(STUB, publicKey); err != nil {
+	if user, err = getUserInfos(publicKey); err != nil {
 		return 0, err
 	}
 	if amount > user.Amount {
