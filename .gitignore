@@ -3,4 +3,4 @@ network/channel-artifacts/*
 network/docker-compose-e2e.yaml
 log.txt
 ptwist.block
-chaincode/chaicode
+chaincode/chaincode
