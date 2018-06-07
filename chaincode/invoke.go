@@ -19,6 +19,10 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	STUB = stub
 
 	switch fct {
+	// Temporary, not in production
+	case "get":
+		ret, err = _get(argv)
+
 	case "balanceOf":
 		ret, err = balanceOf(argv)
 	case "allowance":
