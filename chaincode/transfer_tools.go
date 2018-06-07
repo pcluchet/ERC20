@@ -12,12 +12,18 @@ func	_transferFrom(ptr *UserInfos, to string, amount uint64) {
 	(*ptr).Amount -= amount
 	(*ptr).Allowances[to] -= amount
 
+	if amount == 0 {
+		delete((*ptr).Allowances, to)
+	}
 	// Remove Allowances if equal to 0
 }
 
 func	_approve(ptr *UserInfos, to string, amount uint64) {
 	(*ptr).Allowances[to] = amount
 
+	if amount == 0 {
+		delete((*ptr).Allowances, to)
+	}
 	// Remove Allowances if equal to 0
 }
 

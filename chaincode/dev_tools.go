@@ -4,7 +4,7 @@ import	"fmt"
 
 // Set stores the asset (both key and value) on the ledger. If the key exists,
 // it will override the value with the new one
-func	set(args []string) (string, error) {
+func	_set(args []string) (string, error) {
 	var	err	error
 
 	// CHECK ARGUMENTS
@@ -19,7 +19,7 @@ func	set(args []string) (string, error) {
 	return args[1], nil
 }
 
-func	delete(args []string) (string, error) {
+func	_delete(args []string) (string, error) {
 	var	err	error
 	// CHECK PARAMETERS
 	if len(args) != 2 {
@@ -34,7 +34,7 @@ func	delete(args []string) (string, error) {
 }
 
 // Get returns the value of the specified asset key
-func	get(args []string) (string, error) {
+func	_get(args []string) (string, error) {
 	var	err		error
 	var	value	[]byte
 
