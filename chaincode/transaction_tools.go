@@ -5,12 +5,12 @@ package main
 /* ************************************************************************** */
 
 func	deleteAllowances(ptr *UserInfos) {
-	for key, _ := range (*ptr).Allowances {
+	for key, value := range (*ptr).Allowances {
 		if (*ptr).Amount == 0 {
 			delete((*ptr).Allowances, key)
-		} //else if value > (*ptr).Amount{
-		//	(*ptr).Allowances[key] = (*ptr).Amount
-		//}
+		} else if value > (*ptr).Amount{
+			(*ptr).Allowances[key] = (*ptr).Amount
+		}
 	}
 }
 
@@ -21,7 +21,10 @@ func	_transfer(ptr *UserInfos, to string, amount uint64) {
 func	_transferFrom(ptr *UserInfos, to string, amount uint64) {
 	(*ptr).Amount -= amount
 	(*ptr).Allowances[to] -= amount
-	deleteAllowances(ptr)
+
+	if (*ptr).Allowances[to] == 0 {
+		delete((*ptr).Allowances, to)
+	}
 }
 
 func	_approve(ptr *UserInfos, to string, amount uint64) {
