@@ -1,15 +1,15 @@
-package main
+package	main
 
-import (
-	"crypto/ecdsa"
-	"crypto/x509"
-	"encoding/pem"
-	"fmt"
-	"strings"
+import	"crypto/ecdsa"
+import	"crypto/x509"
+import	"encoding/pem"
+import	"fmt"
+import	"strings"
+import	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
 
-	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-)
+////////////////////////////////////////////////////////////////////////////////
+/// STATIC FUNCTIONS
+////////////////////////////////////////////////////////////////////////////////
 
 //Encode the given ecdsa key in pem format
 func pem_encode_pubkey(publicKey *ecdsa.PublicKey) string {
@@ -19,16 +19,17 @@ func pem_encode_pubkey(publicKey *ecdsa.PublicKey) string {
 }
 
 //return the public key of creator in pem format
-func getPemPublicKeyOfCreator(stub shim.ChaincodeStubInterface) (string, error) {
+func getPemPublicKeyOfCreator() (string, error) {
+	var	err			error
+	var	ecdsaPublicKey	*ecdsa.PublicKey
+	var	cert		*x509.Certificate
 
-	cert, err := cid.GetX509Certificate(stub)
+	cert, err = cid.GetX509Certificate(STUB)
 	if err != nil {
 		return "", fmt.Errorf("Error : %s", err)
 	}
-	ecPublicKey := cert.PublicKey.(*ecdsa.PublicKey)
-	//fmt.Println(ecPublicKey)
-	//fmt.Printf("PUB : %x\n", ecdPublicKey)
-	return pem_encode_pubkey(ecPublicKey), nil
+	ecdsaPublicKey = cert.PublicKey.(*ecdsa.PublicKey)
+	return pem_encode_pubkey(ecdsaPublicKey), nil
 }
 
 //trim public key to remove newlines and begin/end tag
@@ -39,13 +40,19 @@ func trimPemPubKey(key string) string {
 	return key
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// PUBLIC FUNCTION
+////////////////////////////////////////////////////////////////////////////////
+
 //return the trimmed public key of creator in pem format
-func getTrimmedPubKeyOfCreator(stub shim.ChaincodeStubInterface) (string, error) {
-	spender, er := getPemPublicKeyOfCreator(stub)
-	if er != nil {
-		return "", fmt.Errorf("Cannot get creator of the transaction : %s", er)
+func	getPublicKey() (string, error) {
+	var	err		error
+	var	spender	string
+
+	spender, err = getPemPublicKeyOfCreator()
+	if err != nil {
+		return "", fmt.Errorf("Cannot get creator of the transaction : %s", err)
 	}
 	spender = trimPemPubKey(spender)
 	return spender, nil
-
 }
