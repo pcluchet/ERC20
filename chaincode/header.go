@@ -18,5 +18,4 @@ type	Events		struct {
 
 var		STUB shim.ChaincodeStubInterface
 
-const	centralBankName			string = "central_bank"
 const	centralBankTotalSupply	uint64 = 100000
