@@ -1,62 +1,67 @@
 package main
 
-import	"encoding/json"
 import	"fmt"
 import	"strconv"
 
-func generateJSON(infos UserInfos) ([]byte, error) {
-	var	jsBytes		[]byte
-	var	err			error
+/* ************************************************************************** */
+/*		PRIVATE																  */
+/* ************************************************************************** */
 
-	jsBytes, err = json.Marshal(infos)
-	if err != nil {
-		return jsBytes, fmt.Errorf("Unable to parse given object to json")
+func	(self Transaction) ParseApprove() error {
+	if self.From == self.To {
+		return fmt.Errorf("Cannot allow money to yourself")
 	}
-	return jsBytes, nil
+	if self.Amount > self.User.Amount {
+		return fmt.Errorf("Insufficent fund")
+	}
+
+	return nil
 }
 
-func approve(args []string) (string, error) {
-	// TODO :
-	// [ ] real user implementation
-	// [ ] check if spender is real/valid user
-	// [ ] if amount is zero, delete allowance
-	// [ ] better payload
-	// [ ] Event
-	var	err			error
-	var	newAmount	uint64
-	var userKey		string
-	var userInfos	UserInfos
-	var	jsBytes		[]byte
+func	getApprove(argv []string) (Transaction, error) {
+	var publicKey	string
+	var amount		uint64
+	var user		UserInfos
+	var err			error
 
-	if len(args) != 3 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a 3 (last one is user)")
+	if publicKey, err = getPublicKey(); err != nil {
+		return Transaction{}, err
 	}
-	// GET USER INFOS
-	userKey = args[2]
-	userInfos, err = getUserInfos(userKey)
-	if err != nil {
-		return "", err
+	if amount, err = strconv.ParseUint(argv[1], 10, 64); err != nil {
+		return Transaction{}, err
 	}
-	// GET NEW APPROVED AMOUNT
-	newAmount, err = strconv.ParseUint(args[1], 10, 64)
-	if err != nil {
-		return "", err
+	if user, err = getUserInfos(publicKey); err != nil {
+		return Transaction{}, err
 	}
-	// SET NEW APPROVED AMOUNT
-	userInfos.Allowances[args[0]] = newAmount
 
-	fmt.Printf("%+v", userInfos)
+	if err = (Transaction{publicKey, argv[0], amount, user}).ParseApprove(); err != nil {
+		return Transaction{}, err
+	}
+	return Transaction{publicKey, argv[0], amount, user}, nil
 
-	// CAST INFOS TO STRING
-	jsBytes, err = generateJSON(userInfos)
-	if err != nil {
+}
+
+/* ************************************************************************** */
+/*		PUBLIC																  */
+/* ************************************************************************** */
+
+func approve(argv []string) (string, error) {
+	var tx		Transaction
+	var err		error
+
+	if err = parseArgv(argv, "approve", 2); err != nil {
 		return "", err
 	}
-	// PUT STRINGIFIED INFOS TO LEDGER
-	err = STUB.PutState(userKey, jsBytes)
-	if err != nil {
+	if tx, err = getApprove(argv); err != nil {
 		return "", err
 	}
-	// SUCCESS
-	return fmt.Sprintf("User added in the allowances "), nil
+
+	if err = changeStateFrom(tx, _approve); err != nil {
+		return "", err
+	}
+	if err = event(tx.From, tx.To, tx.Amount, "approval"); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("Successfull approval"), nil
 }

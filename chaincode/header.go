@@ -16,6 +16,13 @@ type	Events		struct {
 		Value		uint64
 }
 
+type	Transaction	struct {
+		From		string
+		To			string
+		Amount		uint64
+		User		UserInfos
+}
+
 var		STUB shim.ChaincodeStubInterface
 
 const	centralBankTotalSupply	uint64 = 100000

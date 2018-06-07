@@ -19,9 +19,11 @@ func	checkNil(argv []string) error {
 func		usage(typeofTx string) error {
 	switch typeofTx {
 		case "transfer":
-			return fmt.Errorf("Transfer: [address to] [uint tokens] [publicKey]")
+			return fmt.Errorf("Transfer: [address to] [uint tokens]")
 		case "transferFrom":
 			return fmt.Errorf("TransferFrom: [address from] [address to] [uint tokens]")
+		case "approve":
+			return fmt.Errorf("Approve: [address spender] [uint tokens]")
 	}
 
 	return nil
@@ -31,17 +33,14 @@ func		usage(typeofTx string) error {
 /*		PUBLIC																  */
 /* ************************************************************************** */
 
-func	parseArgv(argv []string, typeofTx string) error {
+func	parseArgv(argv []string, typeofTx string, num int) error {
 	var err	error
 
-	if len(argv) != 3 {
+	if len(argv) != num {
 		return usage(typeofTx)
 	}
 	if err = checkNil(argv); err != nil {
 		return err
-	}
-	if argv[0] == argv[2] {
-		return fmt.Errorf("Cannot send money to yourself")
 	}
 
 	return nil
