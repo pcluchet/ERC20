@@ -12,14 +12,17 @@ import	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
 ////////////////////////////////////////////////////////////////////////////////
 
 //Encode the given ecdsa key in pem format
-func pem_encode_pubkey(publicKey *ecdsa.PublicKey) string {
-	x509EncodedPub, _ := x509.MarshalPKIXPublicKey(publicKey)
-	pemEncodedPub := pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: x509EncodedPub})
-	return string(pemEncodedPub)
+func	pemEncodePublicKey(publicKey *ecdsa.PublicKey) string {
+	var	x509EncodedPublicKey	[]byte
+	var	pemEncodedPublicKey		[]byte
+
+	x509EncodedPublicKey, _ = x509.MarshalPKIXPublicKey(publicKey)
+	pemEncodedPublicKey = pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: x509EncodedPublicKey})
+	return string(pemEncodedPublicKey)
 }
 
 //return the public key of creator in pem format
-func getPemPublicKeyOfCreator() (string, error) {
+func	getPemPublicKeyOfCreator() (string, error) {
 	var	err			error
 	var	ecdsaPublicKey	*ecdsa.PublicKey
 	var	cert		*x509.Certificate
@@ -29,11 +32,11 @@ func getPemPublicKeyOfCreator() (string, error) {
 		return "", fmt.Errorf("Error : %s", err)
 	}
 	ecdsaPublicKey = cert.PublicKey.(*ecdsa.PublicKey)
-	return pem_encode_pubkey(ecdsaPublicKey), nil
+	return pemEncodePublicKey(ecdsaPublicKey), nil
 }
 
 //trim public key to remove newlines and begin/end tag
-func trimPemPubKey(key string) string {
+func	trimPemPubKey(key string) string {
 	key = strings.Replace(key, "\n", "", -1)
 	key = strings.Replace(key, "-----BEGIN PUBLIC KEY-----", "", -1)
 	key = strings.Replace(key, "-----END PUBLIC KEY-----", "", -1)

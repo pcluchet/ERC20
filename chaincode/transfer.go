@@ -12,7 +12,7 @@ func	parseTransfer(str string, publicKey string) (uint64, error) {
 	var user UserInfos
 	var err	error
 
-	if user, err = getUserInfos(STUB, publicKey); err != nil {
+	if user, err = getUserInfos(publicKey); err != nil {
 		return 0, err
 	}
 	if amount, err = strconv.ParseUint(str, 10, 64); err != nil {
