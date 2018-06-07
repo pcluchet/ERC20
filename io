@@ -12,7 +12,7 @@ readonly usage=("io tsp"
 				"io apr [address spender] [uint tokens] [publicKey]"
 				"io trf [address from] [address to] [uint tokens]"
 				"io	get [key]"
-				"io pub")
+				"io pub [flag silent]")
 
 # **************************************************************************** #
 #			USAGE															   #
@@ -114,17 +114,26 @@ function	transferFrom {
 }
 
 function	getPublicKey {
-	echo "---------------> Public key 👀 <---------------"
-	echo ""
+	if [[ -n $1 ]]; then
+		if [[ $1 != "-s" ]] && [[ $1 != "--silent" ]]; then
+			fctUsage 7 ": "
+			exit 1
+		fi
+	else
+		printf -- "---------------> Public key 👀 <---------------\n\n"
+	fi
 	# set "nullglob" shell option
 	# globbing which does not match will result as empty string
 	shopt -s nullglob
 
-	publicKey=$(openssl ec -in "${CORE_PEER_MSPCONFIGPATH}/keystore/"*_sk -pubout 2>&- \
+	publicKey=(
+		$(openssl ec \
+		-in		"${CORE_PEER_MSPCONFIGPATH}/keystore/"*_sk \
+		-pubout	2>&- \
 		| tail -n 3 \
-		| head -n 2)
-	if [[ -n ${publicKey} ]]; then
-		echo "${publicKey}"
+		| head -n 2))
+	if [[ ${#publicKey[@]} -gt 0 ]]; then
+		echo "${publicKey[0]}${publicKey[1]}"
 	else
 		if [[ -z ${CORE_PEER_MSPCONFIGPATH} ]]; then
 			printf "error: CORE_PEER_MSPCONFIGPATH is not set.\n" >&2
@@ -155,7 +164,7 @@ case $1 in
 	trf)
 		transferFrom $2 $3 $4 ;;
 	pub)
-		getPublicKey ;;
+		getPublicKey $2;;
 	*)
 		basicUsage ;;
 esac
