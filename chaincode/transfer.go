@@ -12,14 +12,15 @@ func	parseTransfer(str string, publicKey string) (uint64, error) {
 	var user UserInfos
 	var err	error
 
+	if user, err = getUserInfos(STUB, publicKey); err != nil {
+		return 0, err
+	}
 	if amount, err = strconv.ParseUint(str, 10, 64); err != nil {
 		return 0, err
 	}
+
 	if amount == 0 {
 		return 0, fmt.Errorf("Cannot send 0 value")
-	}
-	if user, err = getUserInfos(publicKey); err != nil {
-		return 0, err
 	}
 	if amount > user.Amount {
 		return 0, fmt.Errorf("Insufficent fund")
