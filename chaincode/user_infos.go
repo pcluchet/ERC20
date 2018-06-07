@@ -1,12 +1,8 @@
 package main
 
-import (
-	"encoding/json"
-	"fmt"
-	"strconv"
-
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-)
+import	"encoding/json"
+import	"fmt"
+import	"strconv"
 
 func (self UserInfos) Set(publicKey string) error {
 	var ret		[]byte
@@ -22,10 +18,12 @@ func (self UserInfos) Set(publicKey string) error {
 	return nil
 }
 
-func getUserInfos(stub shim.ChaincodeStubInterface, userPublicKey string) (UserInfos, error) {
-	var user UserInfos
+func	getUserInfos(userPublicKey string) (UserInfos, error) {
+	var	err		error
+	var	user	UserInfos
+	var	value	[]byte
 
-	value, err := stub.GetState(userPublicKey)
+	value, err = STUB.GetState(userPublicKey)
 	if err != nil {
 		return user, fmt.Errorf("Failed to get asset: %s with error: %s", userPublicKey, err)
 	}
@@ -35,24 +33,25 @@ func getUserInfos(stub shim.ChaincodeStubInterface, userPublicKey string) (UserI
 	if err = json.Unmarshal(value, &user); err != nil {
 		return user, err
 	}
-
 	return user, nil
 }
 
-func balanceOf(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+func	balanceOf(args []string) (string, error) {
 	// TODO :
 	// [ ] User is a valid user, or check pubkey validity or whatever
+	var	err			error
+	var	userInfos	UserInfos
 
+	// CHECK ARGUMENTS
 	if len(args) != 1 {
 		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
 	}
-
-	usrInfos, err := getUserInfos(stub, args[0])
+	// GET USER INFORMATIONS
+	userInfos, err = getUserInfos(args[0])
 	if err != nil {
 		return "", err
 	}
-
-	return fmt.Sprintf("%s", strconv.FormatUint(usrInfos.Amount, 10)), nil
+	return strconv.FormatUint(userInfos.Amount, 10), nil
 }
 
 //returns the amount of an allowance matching given spender in a allowanceouple list
@@ -72,23 +71,26 @@ func allowanceOfUser(userInfos UserInfos, spender string) (uint64, error) {
 //	return -1
 //}
 
-func allowance(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+func	allowance(args []string) (string, error) {
 	// TODO :
 	// [ ] User is a valid user, or check pubkey validity or whatever
+	var	err			error
+	var	userInfos	UserInfos
+	var	amount		uint64
 
+	// CHECK PARAMETERS
 	if len(args) != 2 {
 		return "", fmt.Errorf("Incorrect arguments. Expecting a token owner public key, and a spender public key")
 	}
-
-	usrInfos, err := getUserInfos(stub, args[0])
+	// GET USER INFORMATIONS
+	userInfos, err = getUserInfos(args[0])
 	if err != nil {
 		return "", err
 	}
-
-	value, err0 := allowanceOfUser(usrInfos, args[1])
-	if err0 != nil {
-		return "", err0
+	// GET ALLOWANCE AMOUNT
+	amount, err = allowanceOfUser(userInfos, args[1])
+	if err != nil {
+		return "", err
 	}
-
-	return fmt.Sprintf("%s", strconv.FormatUint(value, 10)), nil
+	return strconv.FormatUint(amount, 10), nil
 }

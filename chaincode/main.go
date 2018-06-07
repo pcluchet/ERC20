@@ -43,21 +43,21 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 	switch fct {
 	case "set":
-		ret, err = set(stub, argv)
+		ret, err = set(argv)
 	case "get":
-		ret, err = get(stub, argv)
+		ret, err = get(argv)
 	case "balanceOf":
-		ret, err = balanceOf(stub, argv)
+		ret, err = balanceOf(argv)
 	case "allowance":
-		ret, err = allowance(stub, argv)
+		ret, err = allowance(argv)
 	case "transfer":
 		ret, err = transfer(argv)
 	case "transferFrom":
 		ret, err = transferFrom(argv)
 	case "approve":
-		ret, err = approve(stub, argv)
+		ret, err = approve(argv)
 	case "totalSupply":
-		ret, err = totalSupply(stub)
+		ret, err = totalSupply()
 	default:
 		err = fmt.Errorf("Illegal function called \n")
 	}

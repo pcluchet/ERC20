@@ -13,7 +13,7 @@ func	parseTransferFrom(argv []string) (uint64, error) {
 	var err		error
 	var prs		bool
 
-	if user, err = getUserInfos(STUB, argv[0]); err != nil {
+	if user, err = getUserInfos(argv[0]); err != nil {
 		return 0, err
 	}
 	if _, prs = user.Allowances[argv[1]]; prs == false {
