@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#/usr/bin/env bash
 
 readonly BASE="peer chaincode invoke -o orderer.example.com:7050"
 readonly TLS="--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
@@ -8,8 +8,8 @@ readonly fct=(	"totalSupply" "balanceOf" "allowance" "transfer" "approve"
 readonly usage=("io tsp"
 				"io blo [address tokenOwner]"
 				"io alo [address tokenOwner] [address spender]"
-				"io trs [address to] [uint tokens] [publicKey]"
-				"io apr [address spender] [uint tokens] [publicKey]"
+				"io trs [address to] [uint tokens]"
+				"io apr [address spender] [uint tokens]"
 				"io trf [address from] [address to] [uint tokens]"
 				"io	get [key]"
 				"io pub [flag silent]")
@@ -81,22 +81,22 @@ function	allowance {
 }
 
 function	transfer {
-	if [ $1 ] && [ $2 ] && [ $3 ]; then
+	if [ $1 ] && [ $2 ]; then
 		echo "---------------> Transfer to $1 of $2 📲  <---------------"
 		echo ""
 
-		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"transfer\", \"$1\", \"$2\", \"$3\"]}"`
+		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"transfer\", \"$1\", \"$2\"]}"`
 	else
 		fctUsage 3 ": "
 	fi
 }
 
 function	approve {
-	if [ $1 ] && [ $2 ] && [ $3 ]; then
+	if [ $1 ] && [ $2 ]; then
 		echo "---------------> Approve from $1 of $2 👮  <---------------"
 		echo ""
 
-		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"approve\", \"$1\", \"$2\", \"$3\"]}"`
+		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"approve\", \"$1\", \"$2\"]}"`
 	else
 		fctUsage 4 ": "
 	fi
@@ -159,7 +159,7 @@ case $1 in
 	alo)
 		allowance $2 $3 ;;
 	trs)
-		transfer $2 $3 $4 ;;
+		transfer $2 $3 ;;
 	apr)
 		approve $2 $3 $4 ;;
 	trf)

@@ -7,53 +7,67 @@ import "strconv"
 /*		PRIVATE																  */
 /* ************************************************************************** */
 
-func	parseTransfer(str string, publicKey string) (uint64, error) {
-	var amount uint64
-	var user UserInfos
-	var err	error
-
-	if user, err = getUserInfos(publicKey); err != nil {
-		return 0, err
+func	(self Transaction) ParseTransfer() error {
+	if self.From == self.To {
+		return fmt.Errorf("Cannot send money to yourself")
 	}
-	if amount, err = strconv.ParseUint(str, 10, 64); err != nil {
-		return 0, err
+	if self.Amount == 0 {
+		return fmt.Errorf("Cannot send 0 value")
 	}
-
-	if amount == 0 {
-		return 0, fmt.Errorf("Cannot send 0 value")
-	}
-	if amount > user.Amount {
-		return 0, fmt.Errorf("Insufficent fund")
+	if self.Amount > self.User.Amount {
+		return fmt.Errorf("Insufficent fund")
 	}
 
-	return amount, nil
+	return nil
 }
+
+func	getTransfer(argv []string) (Transaction, error) {
+	var publicKey	string
+	var amount		uint64
+	var user		UserInfos
+	var err			error
+
+	if publicKey, err = getPublicKey(); err != nil {
+		return Transaction{}, err
+	}
+	if amount, err = strconv.ParseUint(argv[1], 10, 64); err != nil {
+		return Transaction{}, err
+	}
+	if user, err = getUserInfos(publicKey); err != nil {
+		return Transaction{}, err
+	}
+
+	if err = (Transaction{publicKey, argv[0], amount, user}).ParseTransfer(); err != nil {
+		return Transaction{}, err
+	}
+	return Transaction{publicKey, argv[0], amount, user}, nil
+}
+
 
 /* ************************************************************************** */
 /*		PUBLIC																  */
 /* ************************************************************************** */
 
-// To do [Change authentification of argv[2] with getCreator->getPublicKey]
-
 func transfer(argv []string) (string, error) {
+	var tx	Transaction
 	var err error
-	var amount uint64
 
-	if err = parseArgv(argv, "transfer"); err != nil {
+	if err = parseArgv(argv, "transfer", 2); err != nil {
 		return "", err
 	}
-	if amount, err = parseTransfer(argv[1], argv[2]); err != nil {
-		return "", err
-	}
-	if err = changeStateFrom(argv[2], argv[0], amount, _transfer); err != nil {
-		return "", err
-	}
-	if err = changeStateTo(argv[0], amount); err != nil {
-		return "", err
-	}
-	if err = event(argv[2], argv[0], amount, "transfer"); err != nil {
+	if tx, err = getTransfer(argv); err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("Successfull transaction from [%s] to [%s]", argv[2], argv[0]), nil
+	if err = changeStateFrom(tx, _transfer); err != nil {
+		return "", err
+	}
+	if err = changeStateTo(tx); err != nil {
+		return "", err
+	}
+	if err = event(tx.From, tx.To, tx.Amount, "transfer"); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("Successfull transaction"), nil
 }
