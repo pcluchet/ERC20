@@ -102,21 +102,46 @@ instantiateChaincode () {
 	setGlobals $PEER $ORG
 	VERSION=${3:-1.0}
 
-	echo "--------------------------------------------------------------------------------"
-	echo ${CORE_PEER_MSPCONFIGPATH}
-	echo "--------------------------------------------------------------------------------"
+	shopt -s nullglob
+	PUBLICKEY=($(openssl ec \
+		-in "${CORE_PEER_MSPCONFIGPATH}/keystore/"* \
+		-pubout \
+		| head -n 3 \
+		| tail -n 2))
+	echo "=== Public key [${PUBLICKEY[@]}]"
+	PUBLICKEY="${PUBLICKEY[0]}${PUBLICKEY[1]}"
+	echo "=== Cleaned public key [${PUBLICKEY}]"
+	if [[ -z ${PUBLICKEY} ]]; then
+		printf "========== ERROR ==========\n"
+		printf "cannot get public key from admin msp config file.\n"
+		exit 1
+	fi
+	shopt -u nullglob
+
 	# while 'peer chaincode' command can get the orderer endpoint from the peer (if join was successful),
 	# lets supply it directly as we know it using the "-o" option
 	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
                 set -x
-		peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n ${CHAINCODE} -l ${LANGUAGE} -v ${VERSION} -c '{"Args":["central_bank"]}' >&log.txt
-		#peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n ${CHAINCODE} -l ${LANGUAGE} -v ${VERSION} -c '{"Args":["init","a","100","b","200"]}' -P "OR	('Org1MSP.peer','Org2MSP.peer')" >&log.txt
+		peer chaincode instantiate \
+			-o orderer.example.com:7050 \
+			-C $CHANNEL_NAME \
+			-n ${CHAINCODE} \
+			-l ${LANGUAGE} \
+			-v ${VERSION} \
+			-c "{\"Args\":[\"${PUBLICKEY}\"]}" >&log.txt
 		res=$?
                 set +x
 	else
                 set -x
-		peer chaincode instantiate -o orderer.example.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CHAINCODE} -l ${LANGUAGE} -v 1.0 -c '{"Args":["central_bank"]}' >&log.txt
-		#peer chaincode instantiate -o orderer.example.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CHAINCODE} -l ${LANGUAGE} -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P "OR	('Org1MSP.peer','Org2MSP.peer')" >&log.txt
+		peer chaincode instantiate \
+			-o orderer.example.com:7050 \
+			--tls $CORE_PEER_TLS_ENABLED \
+			--cafile $ORDERER_CA \
+			-C $CHANNEL_NAME \
+			-n ${CHAINCODE} \
+			-l ${LANGUAGE} \
+			-v 1.0 \
+			-c "{\"Args\":[\"${PUBLICKEY}\"]}" >&log.txt
 		res=$?
                 set +x
 	fi

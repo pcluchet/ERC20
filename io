@@ -128,7 +128,7 @@ function	getPublicKey {
 
 	publicKey=(
 		$(openssl ec \
-		-in		"${CORE_PEER_MSPCONFIGPATH}/keystore/"*_sk \
+		-in		"${CORE_PEER_MSPCONFIGPATH}/keystore/"* \
 		-pubout	2>&- \
 		| tail -n 3 \
 		| head -n 2))
@@ -142,6 +142,7 @@ function	getPublicKey {
 				"${CORE_PEER_MSPCONFIGPATH}"
 		fi
 	fi
+	shopt -u nullglob
 }
 
 # **************************************************************************** #
