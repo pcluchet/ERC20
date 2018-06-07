@@ -3,10 +3,16 @@
 readonly BASE="peer chaincode invoke -o orderer.example.com:7050"
 readonly TLS="--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
 
-readonly fct=("totalSupply" "balanceOf" "allowance" "transfer" "approve" "transferFrom" "getState")
-readonly usage=("io tsp" "io blo [address tokenOwner]" "io alo [address tokenOwner] [address spender]"					\
-				"io trs [address to] [uint tokens] [publicKey]" "io apr [address spender] [uint tokens] [publicKey]"	\
-				"io trf [address from] [address to] [uint tokens]" "io get [key]")
+readonly fct=(	"totalSupply" "balanceOf" "allowance" "transfer" "approve"
+				"transferFrom" "getState" "getPublicKey")
+readonly usage=("io tsp"
+				"io blo [address tokenOwner]"
+				"io alo [address tokenOwner] [address spender]"
+				"io trs [address to] [uint tokens] [publicKey]"
+				"io apr [address spender] [uint tokens] [publicKey]"
+				"io trf [address from] [address to] [uint tokens]"
+				"io	get [key]"
+				"io pub")
 
 # **************************************************************************** #
 #			USAGE															   #
@@ -21,9 +27,12 @@ function	fctUsage {
 function	basicUsage {
 	echo "----------> Usage 🔖  <----------" 
 	echo ""
+	local i=0
+	local function_number=${#fct[@]}
 
-	for index in 0 1 2 3 4 5 6 ; do
-		fctUsage $index ":\t"
+	while [[ ${i} -lt ${function_number} ]]; do
+		fctUsage ${i} ":\t"
+		(( i++ ))
 	done
 }
 
@@ -104,6 +113,27 @@ function	transferFrom {
 	fi
 }
 
+function	getPublicKey {
+	echo "---------------> Public key 👀 <---------------"
+	echo ""
+	# set "nullglob" shell option
+	# globbing which does not match will result as empty string
+	shopt -s nullglob
+
+	publicKey=$(openssl ec -in "${CORE_PEER_MSPCONFIGPATH}/keystore/"*_sk -pubout 2>&- \
+		| tail -n 3 \
+		| head -n 2)
+	if [[ -n ${publicKey} ]]; then
+		echo "${publicKey}"
+	else
+		if [[ -z ${CORE_PEER_MSPCONFIGPATH} ]]; then
+			printf "error: CORE_PEER_MSPCONFIGPATH is not set.\n" >&2
+		else
+			printf "error: dammaged or non-existent msp config file in [%s]\n" \
+				"${CORE_PEER_MSPCONFIGPATH}"
+		fi
+	fi
+}
 
 # **************************************************************************** #
 #			PUBLIC															   #
@@ -124,6 +154,8 @@ case $1 in
 		approve $2 $3 $4 ;;
 	trf)
 		transferFrom $2 $3 $4 ;;
+	pub)
+		getPublicKey ;;
 	*)
 		basicUsage ;;
 esac
