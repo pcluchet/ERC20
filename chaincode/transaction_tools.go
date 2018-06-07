@@ -5,18 +5,17 @@ package main
 /* ************************************************************************** */
 
 func	deleteAllowances(ptr *UserInfos) {
-	for key, value := range (*ptr).Allowances {
+	for key, _ := range (*ptr).Allowances {
 		if (*ptr).Amount == 0 {
 			delete((*ptr).Allowances, key)
-		} else if value > (*ptr).Amount{
-			(*ptr).Allowances[key] = (*ptr).Amount
-		}
+		} //else if value > (*ptr).Amount{
+		//	(*ptr).Allowances[key] = (*ptr).Amount
+		//}
 	}
 }
 
 func	_transfer(ptr *UserInfos, to string, amount uint64) {
 	(*ptr).Amount -= amount
-	deleteAllowances(ptr)
 }
 
 func	_transferFrom(ptr *UserInfos, to string, amount uint64) {
