@@ -22,6 +22,7 @@ func	parseTransferFrom(argv []string) (uint64, error) {
 	if amount, err = strconv.ParseUint(argv[2], 10, 64); err != nil {
 		return 0, err
 	}
+
 	if amount == 0 {
 		return 0, fmt.Errorf("Cannot send 0 value")
 	}
