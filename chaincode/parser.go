@@ -9,7 +9,7 @@ import "fmt"
 func	checkNil(argv []string) error {
 	for index, _ := range argv {
 		if argv[index] == "" {
-			return fmt.Errorf("Parameters cannot be equal to nil")
+			return fmt.Errorf("Parse Error")
 		}
 	}
 

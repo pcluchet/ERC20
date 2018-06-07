@@ -7,18 +7,15 @@ import "strconv"
 /*		PRIVATE																  */
 /* ************************************************************************** */
 
-func	(self Transaction) ParseTransfer() error {
+func	(self Transaction) ParseTransfer() (Transaction, error) {
 	if self.From == self.To {
-		return fmt.Errorf("Cannot send money to yourself")
-	}
-	if self.Amount == 0 {
-		return fmt.Errorf("Cannot send 0 value")
+		return Transaction{}, fmt.Errorf("Illegal Operation")
 	}
 	if self.Amount > self.User.Amount {
-		return fmt.Errorf("Insufficent fund")
+		return Transaction{}, fmt.Errorf("Insufficent Fund")
 	}
 
-	return nil
+	return self, nil
 }
 
 func	getTransfer(argv []string) (Transaction, error) {
@@ -37,10 +34,7 @@ func	getTransfer(argv []string) (Transaction, error) {
 		return Transaction{}, err
 	}
 
-	if err = (Transaction{publicKey, argv[0], amount, user}).ParseTransfer(); err != nil {
-		return Transaction{}, err
-	}
-	return Transaction{publicKey, argv[0], amount, user}, nil
+	return (Transaction{publicKey, argv[0], amount, user}).ParseTransfer()
 }
 
 

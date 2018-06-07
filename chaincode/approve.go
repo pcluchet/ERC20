@@ -7,17 +7,6 @@ import	"strconv"
 /*		PRIVATE																  */
 /* ************************************************************************** */
 
-func	(self Transaction) ParseApprove() error {
-	if self.From == self.To {
-		return fmt.Errorf("Cannot allow money to yourself")
-	}
-	if self.Amount > self.User.Amount {
-		return fmt.Errorf("Insufficent fund")
-	}
-
-	return nil
-}
-
 func	getApprove(argv []string) (Transaction, error) {
 	var publicKey	string
 	var amount		uint64
@@ -34,11 +23,7 @@ func	getApprove(argv []string) (Transaction, error) {
 		return Transaction{}, err
 	}
 
-	if err = (Transaction{publicKey, argv[0], amount, user}).ParseApprove(); err != nil {
-		return Transaction{}, err
-	}
-	return Transaction{publicKey, argv[0], amount, user}, nil
-
+	return (Transaction{publicKey, argv[0], amount, user}).ParseTransfer()
 }
 
 /* ************************************************************************** */
