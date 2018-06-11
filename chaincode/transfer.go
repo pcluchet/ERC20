@@ -7,18 +7,18 @@ import "strconv"
 /*		PRIVATE																  */
 /* ************************************************************************** */
 
-func	(self Transaction) ParseTransfer() (Transaction, error) {
+func (self Transaction) ParseTransfer() (Transaction, error) {
 	if self.From == self.To {
-		return Transaction{}, fmt.Errorf("Illegal Operation")
+		return Transaction{}, fmt.Errorf("Transfer: illegal operation")
 	}
-	if self.Amount > self.User.Amount {
-		return Transaction{}, fmt.Errorf("Insufficent Fund")
+	if self.Amount <= self.User.Amount {
+		return self, nil
 	}
 
-	return self, nil
+	return Transaction{}, fmt.Errorf("Transfer: permission denied")
 }
 
-func	getTransfer(argv []string) (Transaction, error) {
+func	getTransferTx(argv []string) (Transaction, error) {
 	var publicKey	string
 	var amount		uint64
 	var user		UserInfos
@@ -49,7 +49,7 @@ func transfer(argv []string) (string, error) {
 	if err = parseArgv(argv, "transfer", 2); err != nil {
 		return "", err
 	}
-	if tx, err = getTransfer(argv); err != nil {
+	if tx, err = getTransferTx(argv); err != nil {
 		return "", err
 	}
 

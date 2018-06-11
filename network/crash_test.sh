@@ -22,20 +22,22 @@ function		title()
 function		launch()
 {
 	docker exec ${1} bash -c "${2}"
+	sleep 2
 }
 
 ################################################################################
 ###                                   MAIN                                   ###
 ################################################################################
 
-if [[ $(whoami) != root ]]; then
-	printf "you need to be root.\n" >&2
-	exit 0
-fi
+# WHY ?
+#if [[ $(whoami) != root ]]; then
+#	printf "you need to be root.\n" >&2
+#	exit 0
+#fi
 
-pub_bank=$(launch central_bank	"io pub --silent")
-pub_bob=$(launch bob			"io pub --silent")
-pub_alice=$(launch alice		"io pub --silent")
+pub_bank=$(launch	"central_bank"	"io pub --silent")
+pub_bob=$(launch	"bob"			"io pub --silent")
+pub_alice=$(launch	"alice"			"io pub --silent")
 
 title "CENTRALBANK to BOB"
 launch central_bank	"io apr ${pub_bob} 10"

@@ -7,25 +7,26 @@ import "strconv"
 /*		PRIVATE																  */
 /* ************************************************************************** */
 
-func	(self Transaction) ParseTransferFrom() (Transaction, error) {
-	var prs		bool
-	var err		error
-
-	if _, err = self.ParseTransfer(); err != nil {
-		return Transaction{}, err
+func	(self Transaction) ParseTransferFrom(publicKey string) (Transaction, error) {
+	if self.From == self.To {
+		return Transaction{}, fmt.Errorf("TransferFrom: illegal operation")
 	}
-	if _, prs = self.User.Allowances[self.To]; prs == false {
-		return Transaction{}, fmt.Errorf("Permission Denied")
+	if self.Amount <= self.User.Allowances[self.To] && self.Amount <= self.User.Amount {
+		return self, nil
 	}
 
-	return self, nil
+	return Transaction{}, fmt.Errorf("TransferFrom: permission denied")
 }
 
-func	getTransferFrom(argv []string) (Transaction, error) {
+func	getTransferFromTx(argv []string) (Transaction, error) {
+	var publicKey	string
 	var amount		uint64
 	var user		UserInfos
 	var err			error
 
+	if publicKey, err = getPublicKey(); err != nil {
+		return Transaction{}, err
+	}
 	if amount, err = strconv.ParseUint(argv[2], 10, 64); err != nil {
 		return Transaction{}, err
 	}
@@ -33,7 +34,7 @@ func	getTransferFrom(argv []string) (Transaction, error) {
 		return Transaction{}, err
 	}
 
-	return (Transaction{argv[0], argv[1], amount, user}).ParseTransferFrom()
+	return (Transaction{argv[0], argv[1], amount, user}).ParseTransferFrom(publicKey)
 }
 
 /* ************************************************************************** */
@@ -47,7 +48,7 @@ func	transferFrom(argv []string) (string, error) {
 	if err = parseArgv(argv, "transferFrom", 3); err != nil {
 		return "", err
 	}
-	if tx, err = getTransferFrom(argv); err != nil {
+	if tx, err = getTransferFromTx(argv); err != nil {
 		return "", err
 	}
 
