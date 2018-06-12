@@ -9,6 +9,6 @@ package	main
 //////////////////////////////////////////////////
 
 type	Request		struct {
-		header		map[string]string
-		body		map[string]string
+		Header		map[string]string
+		Body		map[string]string
 }

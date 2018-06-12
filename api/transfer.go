@@ -19,15 +19,15 @@ func	transfer(request Request) {
 	var	amount_string	string
 	var	amount			uint64
 
-	from, exist = request.header["Id"]
+	from, exist = request.Header["Id"]
 	if exist == false {
 		fmt.Printf("error: cannot get user id.")
 	}
-	to, exist = request.body["To"]
+	to, exist = request.Body["To"]
 	if exist == false {
 		fmt.Printf("error: cannot get user id.")
 	}
-	amount_string, exist = request.body["Amount"]
+	amount_string, exist = request.Body["Amount"]
 	if exist == false {
 		fmt.Printf("error: cannot get user id.")
 	}
