@@ -45,9 +45,11 @@ function	get {
 		echo "---------------> Get [$1] 🙈  <---------------"
 		echo ""
 
-		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"get\", \"$1\"]}"`
+		$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"get\", \"$1\"]}"
+		[[ ${?} -ne 0 ]] && exit 2 || exit 0
 	else
 		fctUsage 6 ": "
+		exit 1
 	fi
 }
 
@@ -55,7 +57,8 @@ function	totalSupply {
 	echo "---------------> Total Supply 💰  <---------------"
 	echo ""
 
-	cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"totalSupply\"]}"`
+	$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"totalSupply\"]}"
+	[[ ${?} -ne 0 ]] && exit 2 || exit 0
 }
 
 function	balanceOf {
@@ -63,9 +66,11 @@ function	balanceOf {
 		echo "---------------> Balance of $1 💵  <---------------"
 		echo ""
 	
-		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"balanceOf\", \"$1\"]}"`
+		$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"balanceOf\", \"$1\"]}"
+		[[ ${?} -ne 0 ]] && exit 2 || exit 0
 	else
 		fctUsage 1 ": "
+		exit 1
 	fi
 }
 
@@ -74,9 +79,11 @@ function	allowance {
 		echo "---------------> Allowance from $1 to $2 🤝  <---------------"
 		echo ""
 
-		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"allowance\", \"$1\", \"$2\"]}"`
+		$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"allowance\", \"$1\", \"$2\"]}"
+		[[ ${?} -ne 0 ]] && exit 2 || exit 0
 	else
 		fctUsage 2 ": "
+		exit 1
 	fi
 }
 
@@ -85,9 +92,11 @@ function	transfer {
 		echo "---------------> Transfer to $1 of $2 📲  <---------------"
 		echo ""
 
-		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"transfer\", \"$1\", \"$2\"]}"`
+		$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"transfer\", \"$1\", \"$2\"]}"
+		[[ ${?} -ne 0 ]] && exit 2 || exit 0
 	else
 		fctUsage 3 ": "
+		exit 1
 	fi
 }
 
@@ -96,9 +105,11 @@ function	approve {
 		echo "---------------> Approve from $1 of $2 👮  <---------------"
 		echo ""
 
-		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"approve\", \"$1\", \"$2\"]}"`
+		$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"approve\", \"$1\", \"$2\"]}"
+		[[ ${?} -ne 0 ]] && exit 2 || exit 0
 	else
 		fctUsage 4 ": "
+		exit 1
 	fi
 }
 
@@ -107,9 +118,11 @@ function	transferFrom {
 		echo "---------------> TransferFrom from $1 to $2 of $3 🚀  <---------------"
 		echo ""
 
-		cmd=`$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"transferFrom\", \"$1\", \"$2\", \"$3\"]}"`
+		$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"transferFrom\", \"$1\", \"$2\", \"$3\"]}"
+		[[ ${?} -ne 0 ]] && exit 2 || exit 0
 	else
 		fctUsage 5 ": "
+		exit 1
 	fi
 }
 
@@ -117,7 +130,6 @@ function	getPublicKey {
 	if [[ -n $1 ]]; then
 		if [[ $1 != "-s" ]] && [[ $1 != "--silent" ]]; then
 			fctUsage 7 ": "
-			exit 1
 		fi
 	else
 		printf -- "---------------> Public key 👀 <---------------\n\n"
@@ -141,6 +153,7 @@ function	getPublicKey {
 			printf "error: dammaged or non-existent msp config file in [%s]\n" \
 				"${CORE_PEER_MSPCONFIGPATH}"
 		fi
+		exit 2
 	fi
 	shopt -u nullglob
 }
