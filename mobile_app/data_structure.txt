@@ -103,7 +103,7 @@ body: JSON.stringify({
     by: 'User2',
   })
 
-// Le parametre 'by' identifie celui qui approuve
+// Le parametre 'by' identifie celui qui effectue le transfer (qui doit etre autorisé à la faire par l'user de from)
 
 
 Sortie : 
