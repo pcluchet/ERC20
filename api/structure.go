@@ -8,7 +8,6 @@ package	main
 /// HTTP
 //////////////////////////////////////////////////
 
-type	t_request	struct {
-		header		map[string]string
-		body		map[string]string
+type	Request		struct {
+		Body		map[string]string
 }
