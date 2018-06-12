@@ -11,7 +11,7 @@ func	(self Transaction) ParseTransferFrom(publicKey string) (Transaction, error)
 	if self.From == self.To {
 		return Transaction{}, fmt.Errorf("TransferFrom: illegal operation")
 	}
-	if self.Amount <= self.User.Allowances[self.To] && self.Amount <= self.User.Amount {
+	if self.Amount <= self.User.Allowances[publicKey] && self.Amount <= self.User.Amount {
 		return self, nil
 	}
 

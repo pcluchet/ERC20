@@ -22,14 +22,13 @@ function		title()
 function		launch()
 {
 	docker exec ${1} bash -c "${2}"
-	sleep 2
+	sleep 1
 }
 
 ################################################################################
 ###                                   MAIN                                   ###
 ################################################################################
 
-# WHY ?
 #if [[ $(whoami) != root ]]; then
 #	printf "you need to be root.\n" >&2
 #	exit 0
