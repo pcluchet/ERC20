@@ -11,22 +11,23 @@ import	"fmt"
 /// PUBLIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-func	transfer(request t_request) {
+func	transfer(request Request) {
+	var	err				error
 	var	exist			bool
 	var	from			string
 	var	to				string
-	var	amount_string	uint64
+	var	amount_string	string
 	var	amount			uint64
 
-	from, exist = request.header["id"]
+	from, exist = request.header["Id"]
 	if exist == false {
 		fmt.Printf("error: cannot get user id.")
 	}
-	to, exist = request.body[""]
+	to, exist = request.body["To"]
 	if exist == false {
 		fmt.Printf("error: cannot get user id.")
 	}
-	amount_string, exist = request.body[""]
+	amount_string, exist = request.body["Amount"]
 	if exist == false {
 		fmt.Printf("error: cannot get user id.")
 	}
