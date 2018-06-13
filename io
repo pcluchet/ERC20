@@ -5,14 +5,14 @@ readonly TLS="--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/
 
 readonly fct=(	"totalSupply" "balanceOf" "allowance" "transfer" "approve"
 				"transferFrom" "getState" "getPublicKey")
-readonly usage=("io tsp"
-				"io blo [address tokenOwner]"
-				"io alo [address tokenOwner] [address spender]"
-				"io trs [address to] [uint tokens]"
-				"io apr [address spender] [uint tokens]"
-				"io trf [address from] [address to] [uint tokens]"
+readonly usage=("io totalSupply"
+				"io balanceOf [address tokenOwner]"
+				"io allowance [address tokenOwner] [address spender]"
+				"io transfer [address to] [uint tokens]"
+				"io approve [address spender] [uint tokens]"
+				"io transferFrom [address from] [address to] [uint tokens]"
 				"io	get [key]"
-				"io pub [flag silent]")
+				"io publicKey [flag silent]")
 
 # **************************************************************************** #
 #			USAGE															   #
@@ -165,20 +165,20 @@ function	getPublicKey {
 case $1 in
 	get)
 		get $2 ;;
-	tsp)
+	totalSupply)
 		totalSupply ;;
-	blo)
+	balanceOf)
 		balanceOf $2 ;;
-	alo)
+	allowance)
 		allowance $2 $3 ;;
-	trs)
+	transfer)
 		transfer $2 $3 ;;
-	apr)
+	approve)
 		approve $2 $3 $4 ;;
-	trf)
+	transferFrom)
 		transferFrom $2 $3 $4 ;;
-	pub)
+	publicKey)
 		getPublicKey $2;;
 	*)
 		basicUsage ;;
-esac
+esac 2>&1
