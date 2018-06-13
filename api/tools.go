@@ -38,8 +38,6 @@ func parseStdout(stdout string) string {
 	stdout = stdout[:(len(stdout) - 2)]
 	stdout = strings.Replace(stdout, "\\", "", -1)
 
-	fmt.Println(stdout)
-
 	return stdout
 }
 

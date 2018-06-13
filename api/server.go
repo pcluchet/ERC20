@@ -19,13 +19,14 @@ func	homepage(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(w, err)
 		return
 	}
+
 	command = ejbgekjrg(tx.Body["Transaction"], tx.Body["Id"], tx)
 	if b, err = exec.Command("bash", "-c", command).Output(); err != nil {
-		fmt.Fprintln(w, err)
+		fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "500", err)
 		return
 	}
-	fmt.Println(string(b))
-	fmt.Fprintln(w, parseStdout(string(b)))
+
+	fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "200", parseStdout(string(b)))
 }
 
 ////////////////////////////////////////////////////////////////////////////////
