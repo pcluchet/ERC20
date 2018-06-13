@@ -46,7 +46,7 @@ func		ejbgekjrg(typeofTx string, id string, tx Request) string {
 	var		env		string
 	var		command	string
 
-	base = "docker exec alice bash -c "
+	base = "docker exec CLI bash -c "
 	env = fmt.Sprintf("CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/users/%s@MEDSOS.example.com/msp/ ", id)
 
 	switch typeofTx {

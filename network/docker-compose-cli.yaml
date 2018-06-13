@@ -39,8 +39,8 @@ services:
     networks:
       - byfn
 
-  Central_bank:
-    container_name: central_bank
+  CLI:
+    container_name: CLI
     image: hyperledger/fabric-tools:$IMAGE_TAG
     tty: true
     stdin_open: true
@@ -50,7 +50,7 @@ services:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_LOGGING_LEVEL=INFO
-      - CORE_PEER_ID=central_bank
+      - CORE_PEER_ID=CLI
       - CORE_PEER_ADDRESS=peer0.MEDSOS.example.com:7051
       - CORE_PEER_LOCALMSPID=MEDSOSMSP
       - CORE_PEER_TLS_ENABLED=true
@@ -67,82 +67,6 @@ services:
         ### BASIC VOLUMES ###
         - /var/run/:/host/var/run/
         - ./../chaincode/:/opt/gopath/src/github.com/chaincode
-        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
-        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
-        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
-    depends_on:
-      - orderer.example.com
-      - peer0.MEDSOS.example.com
-      - peer1.MEDSOS.example.com
-    networks:
-      - byfn
-
-  Alice:
-    container_name: alice
-    image: hyperledger/fabric-tools:$IMAGE_TAG
-    tty: true
-    stdin_open: true
-    environment:
-      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/go/bin:/opt/gopath/bin:/opt/gopath/src/github.com/hyperledger/fabric/peer/bin:/opt/gopath/src/github.com/hyperledger/fabric/peer/
-      - GOPATH=/opt/gopath
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      #- CORE_LOGGING_LEVEL=DEBUG
-      - CORE_LOGGING_LEVEL=INFO
-      - CORE_PEER_ID=alice
-      - CORE_PEER_ADDRESS=peer0.MEDSOS.example.com:7051
-      - CORE_PEER_LOCALMSPID=MEDSOSMSP
-      - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/peers/peer0.MEDSOS.example.com/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/peers/peer0.MEDSOS.example.com/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/peers/peer0.MEDSOS.example.com/tls/ca.crt
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/users/User1@MEDSOS.example.com/msp
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    command: /bin/bash
-    volumes:
-        ### HOMEMADE VOLUMES ###
-        - /Users/jle-quel/Documents/Go:/opt/gopath
-        - ../:/opt/gopath/src/github.com/hyperledger/fabric/peer/
-        ### BASIC VOLUMES ###
-        - ../chaincode/:/opt/gopath/src/github.com/chaincode/
-        - /var/run/:/host/var/run/
-        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
-        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
-        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
-    depends_on:
-      - orderer.example.com
-      - peer0.MEDSOS.example.com
-      - peer1.MEDSOS.example.com
-    networks:
-      - byfn
-
-  Bob:
-    container_name: bob
-    image: hyperledger/fabric-tools:$IMAGE_TAG
-    tty: true
-    stdin_open: true
-    environment:
-      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/go/bin:/opt/gopath/bin:/opt/gopath/src/github.com/hyperledger/fabric/peer/bin:/opt/gopath/src/github.com/hyperledger/fabric/peer/
-      - GOPATH=/opt/gopath
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      #- CORE_LOGGING_LEVEL=DEBUG
-      - CORE_LOGGING_LEVEL=INFO
-      - CORE_PEER_ID=bob
-      - CORE_PEER_ADDRESS=peer0.MEDSOS.example.com:7051
-      - CORE_PEER_LOCALMSPID=MEDSOSMSP
-      - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/peers/peer0.MEDSOS.example.com/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/peers/peer0.MEDSOS.example.com/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/peers/peer0.MEDSOS.example.com/tls/ca.crt
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/users/User2@MEDSOS.example.com/msp
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    command: /bin/bash
-    volumes:
-        ### HOMEMADE VOLUMES ###
-        - /Users/jle-quel/Documents/Go:/opt/gopath
-        - ../:/opt/gopath/src/github.com/hyperledger/fabric/peer/
-        ### BASIC VOLUMES ###
-        - ../chaincode/:/opt/gopath/src/github.com/chaincode/
-        - /var/run/:/host/var/run/
         - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
         - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
         - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
