@@ -1,57 +1,72 @@
 package main
 
 import "fmt"
-import "io/ioutil"
-import "encoding/json"
-import "net/http"
-import "os/exec"
 import "strings"
-
-////////////////////////////////////////////////////////////////////////////////
-///	PRIVATE	
-////////////////////////////////////////////////////////////////////////////////
-
-func	getPublicKey(tx Request, value string) string {
-	var command	string
-	var b		[]byte
-	var err		error
-
-	command = ejbgekjrg("publicKey", value, tx)
-	fmt.Printf("GET [%s]\n", command)
-	if b, err = exec.Command("bash", "-c", command).Output(); err != nil {
-		return ""
-	}
-	return strings.Trim(string(b), "\n")
-}
-
-func (self *Request) Public() error {
-	var value			string
-	var prs			bool
-	var params =	[]string{"TokenOwner", "Spender", "From", "To"}
-
-	for index, _ := range params {
-		if value, prs = self.Body[params[index]]; prs == true {
-			self.Body[params[index]] = getPublicKey(*self, value)
-		}
-	}
-
-	return nil
-}
+import "net"
 
 ////////////////////////////////////////////////////////////////////////////////
 ///	PUBLIC 
 ////////////////////////////////////////////////////////////////////////////////
 
-func (self *Request) Get(req *http.Request) error {
-	var b		[]byte
+func	getIp() (string, error) {
+	var addrs	[]net.Addr
+	var ip		net.IP
 	var err		error
 
-	if b, err = ioutil.ReadAll(req.Body); err != nil {
-		return fmt.Errorf("ReadAll: %s", err)
-	}
-	if err = json.Unmarshal(b, &self.Body); err != nil {
-		return fmt.Errorf("Unmarshal: %s", err)
+	if addrs, err = net.InterfaceAddrs(); err != nil {
+		return "", err
 	}
 
-	return (*self).Public()
+	for _, value := range addrs {
+		if ip, _, err = net.ParseCIDR(value.String()); err != nil {
+			return "", err
+		}
+		if ip.IsLoopback() == false && ip.To4() != nil {
+			return ip.String(), nil
+		}
+	}
+
+	return "", fmt.Errorf("No ip found")
+}
+
+func parseStdout(stdout string) string {
+	var index int
+
+	index = strings.Index(stdout, "payload:")
+	stdout = stdout[index+len("payload:\""):]
+	stdout = strings.Split(stdout, "\n")[0]
+	stdout = stdout[:(len(stdout) - 2)]
+	stdout = strings.Replace(stdout, "\\", "", -1)
+
+	fmt.Println(stdout)
+
+	return stdout
+}
+
+func		ejbgekjrg(typeofTx string, id string, tx Request) string {
+	var		base	string
+	var		env		string
+	var		command	string
+
+	base = "docker exec alice bash -c "
+	env = fmt.Sprintf("CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/users/%s@MEDSOS.example.com/msp/ ", id)
+
+	switch typeofTx {
+		case "totalSupply":
+			command = fmt.Sprintf("io totalSupply")
+		case "balanceOf":
+			command = fmt.Sprintf("io balanceOf %s", tx.Body["TokenOwner"])
+		case "allowance":
+			command = fmt.Sprintf("io allowance %s %s", tx.Body["TokenOwner"], tx.Body["Spender"])
+		case "transfer":
+			command = fmt.Sprintf("io transfer %s %s", tx.Body["To"], tx.Body["Tokens"])
+		case "approve":
+			command = fmt.Sprintf("io approve %s %s", tx.Body["Spender"], tx.Body["Tokens"])
+		case "transferFrom":
+			command = fmt.Sprintf("io transferFrom %s %s %s", tx.Body["From"], tx.Body["To"], tx.Body["Tokens"])
+		case "publicKey":
+			command = fmt.Sprintf("io publicKey --silent")
+	}
+
+	return base + "\"" + env + command + "\""
 }
