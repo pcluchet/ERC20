@@ -1,6 +1,6 @@
 # ERC20
 
-## Descriptiom
+## Description
 This project is an implementation of an ERC20 compliant tokens.  
 It respect the technical standard ERC20 on Hyperledger Fabric and gives you the following method-related functions:
 ```
