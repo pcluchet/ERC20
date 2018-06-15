@@ -1,7 +1,7 @@
 # ERC20
 
 ## Descriptiom
-This project is an implementation of an ERC20 compliant tokens.
+This project is an implementation of an ERC20 compliant tokens.  
 It respect the technical standard ERC20 on Hyperledger Fabric and gives you the following method-related functions:
 ```
 totalSupply [Get the total token supply]
