@@ -31,11 +31,18 @@ func		loadApprovals(iterator shim.StateQueryIteratorInterface) (string, error) {
 
 func		whoOwesMe() (string, error) {
 	var		err			error
+	var		user		string
 	var		iterator	shim.StateQueryIteratorInterface
+	var		query		string
 
-	iterator, err = STUB.GetQueryResult("{\"selector\":{\"owner\":\"tom\"}}")
+	user, err = getPublicKey()
 	if err != nil {
-		return "", fmt.Errorf("Cannot get query iterator.")
+		return "", fmt.Errorf("Cannot get user public key.")
+	}
+	query = fmt.Sprintf("{\"selector\":{\"allowances.%s\":{\"$gt\":0}}}", user)
+	iterator, err = STUB.GetQueryResult(query)
+	if err != nil {
+		return "", fmt.Errorf("Cannot get query iterator: %s", err)
 	}
 	return loadApprovals(iterator)
 }

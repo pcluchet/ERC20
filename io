@@ -165,6 +165,12 @@ function	listUsers {
 	[[ ${?} -ne 0 ]] && exit 2 || exit 0
 }
 
+function	whoOwesMe {
+	printf -- "---------------> Who owes me 🤑 <---------------\n\n"
+	$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"whoOwesMe\"]}"
+	[[ ${?} -ne 0 ]] && exit 2 || exit 0
+}
+
 # **************************************************************************** #
 #			PUBLIC															   #
 # **************************************************************************** #
@@ -188,6 +194,8 @@ case $1 in
 		getPublicKey $2;;
 	listUsers)
 		listUsers ;;
+	whoOwesMe)
+		whoOwesMe ;;
 	*)
 		basicUsage ;;
 esac 2>&1
