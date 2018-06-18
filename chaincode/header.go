@@ -24,5 +24,9 @@ type	Transaction	struct {
 }
 
 var		STUB shim.ChaincodeStubInterface
+var		ledger_dev_keys map[string]bool = map[string]bool {
+	"totalSupply":	true,
+	"transfer":		true,
+	"approval":		true}
 
 const	centralBankTotalSupply	uint64 = 100000

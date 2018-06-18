@@ -4,7 +4,7 @@ readonly BASE="peer chaincode invoke -o orderer.example.com:7050"
 readonly TLS="--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
 
 readonly fct=(	"totalSupply" "balanceOf" "allowance" "transfer" "approve"
-				"transferFrom" "getState" "getPublicKey")
+				"transferFrom" "getState" "getPublicKey" "listUsers")
 readonly usage=("io totalSupply"
 				"io balanceOf [address tokenOwner]"
 				"io allowance [address tokenOwner] [address spender]"
@@ -12,7 +12,8 @@ readonly usage=("io totalSupply"
 				"io approve [address spender] [uint tokens]"
 				"io transferFrom [address from] [address to] [uint tokens]"
 				"io	get [key]"
-				"io publicKey [flag silent]")
+				"io publicKey [flag silent]"
+				"io listUsers")
 
 # **************************************************************************** #
 #			USAGE															   #
@@ -158,6 +159,12 @@ function	getPublicKey {
 	shopt -u nullglob
 }
 
+function	listUsers {
+	printf -- "---------------> List users 👩👦👩👦 <---------------\n\n"
+	$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"listUsers\"]}"
+	[[ ${?} -ne 0 ]] && exit 2 || exit 0
+}
+
 # **************************************************************************** #
 #			PUBLIC															   #
 # **************************************************************************** #
@@ -179,6 +186,8 @@ case $1 in
 		transferFrom $2 $3 $4 ;;
 	publicKey)
 		getPublicKey $2;;
+	listUsers)
+		listUsers ;;
 	*)
 		basicUsage ;;
 esac 2>&1
