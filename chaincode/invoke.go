@@ -35,6 +35,10 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		ret, err = approve(argv)
 	case "totalSupply":
 		ret, err = totalSupply()
+	case "listUsers":
+		ret, err = listUsers()
+	case "whoOwesMe":
+		ret, err = whoOwesMe()
 	default:
 		err = fmt.Errorf("Illegal function called \n")
 	}

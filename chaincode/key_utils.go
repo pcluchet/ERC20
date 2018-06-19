@@ -23,9 +23,9 @@ func	pemEncodePublicKey(publicKey *ecdsa.PublicKey) string {
 
 //return the public key of creator in pem format
 func	getPemPublicKeyOfCreator() (string, error) {
-	var	err			error
+	var	err				error
 	var	ecdsaPublicKey	*ecdsa.PublicKey
-	var	cert		*x509.Certificate
+	var	cert			*x509.Certificate
 
 	cert, err = cid.GetX509Certificate(STUB)
 	if err != nil {

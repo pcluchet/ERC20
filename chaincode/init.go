@@ -25,7 +25,7 @@ func (t *SimpleAsset) Init(stub shim.ChaincodeStubInterface) peer.Response {
 		return shim.Error("Cannot set central bank")
 	}
 	// SET TOTAL SUPPLY
-	err = stub.PutState("total_supply",
+	err = stub.PutState("totalSupply",
 	/**/[]byte(strconv.FormatUint(centralBankTotalSupply, 10)))
 	if err != nil {
 		return shim.Error("Cannot set ledger total supply")
