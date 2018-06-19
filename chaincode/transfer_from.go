@@ -58,7 +58,7 @@ func	transferFrom(argv []string) (string, error) {
 	if err = changeStateTo(tx); err != nil {
 		return "", err
 	}
-	if err = event(tx.From, tx.To, tx.Amount, "transferFrom"); err != nil {
+	if err = event(tx.From, tx.To, tx.Amount, "transfer"); err != nil {
 		return "", err
 	}
 

@@ -2,27 +2,50 @@ package	main
 
 import	"fmt"
 import	"github.com/hyperledger/fabric/core/chaincode/shim"
+import	"encoding/json"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// STATIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-func		loadApprovals(iterator shim.StateQueryIteratorInterface) (string, error) {
-	var		approvals	string
+func		loadAllowances(iterator shim.StateQueryIteratorInterface) (string, error) {
+	var		err			error
+	var		user		UserInfos
+	var		allowances	map[string]uint64
+	var		allowance	uint64
+	var		isPresent	bool
+	var		publicKey	string
+	var		result		[]byte
 
+	allowances = make(map[string]uint64)
+	publicKey, err = getPublicKey()
+	if err != nil {
+		return "", fmt.Errorf("Cannot user public key: %s", err)
+	}
 	for iterator.HasNext() {
 		result, iter_err := iterator.Next()
 		if iter_err != nil {
-			return "", fmt.Errorf("Cannot iter through users.")
+			return "", fmt.Errorf("Cannot iterate through users: %s", err)
 		}
-		if approvals == "" {
-			approvals = fmt.Sprintf("%s:%s", result.Key, result.Value)
-		} else {
-			approvals = fmt.Sprintf("%s, %s:%s", approvals, result.Key, result.Value)
+		_, isPresent = ledgerDevKeys[result.Key]
+		if isPresent == true {
+			continue
+		}
+		err = json.Unmarshal(result.Value, &user)
+		if err != nil {
+			return "", fmt.Errorf("Cannot iterate through users: %s", err)
+		}
+		allowance, isPresent = user.Allowances[publicKey]
+		if isPresent == true {
+			allowances[result.Key] = allowance
 		}
 	}
 	iterator.Close()
-	return approvals, nil
+	result, err = json.Marshal(allowances)
+	if err != nil {
+		return "", fmt.Errorf("Cannot create allowance list: %s", err)
+	}
+	return string(result), nil
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,18 +54,11 @@ func		loadApprovals(iterator shim.StateQueryIteratorInterface) (string, error) {
 
 func		whoOwesMe() (string, error) {
 	var		err			error
-	var		user		string
 	var		iterator	shim.StateQueryIteratorInterface
-	var		query		string
 
-	user, err = getPublicKey()
+	iterator, err = STUB.GetStateByRange("", "")
 	if err != nil {
-		return "", fmt.Errorf("Cannot get user public key.")
+		return "", fmt.Errorf("Cannot get keys iterator: %s", err)
 	}
-	query = fmt.Sprintf("{\"selector\":{\"allowances.%s\":{\"$gt\":0}}}", user)
-	iterator, err = STUB.GetQueryResult(query)
-	if err != nil {
-		return "", fmt.Errorf("Cannot get query iterator: %s", err)
-	}
-	return loadApprovals(iterator)
+	return loadAllowances(iterator)
 }

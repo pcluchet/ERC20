@@ -8,16 +8,16 @@ import	"github.com/hyperledger/fabric/core/chaincode/shim"
 ////////////////////////////////////////////////////////////////////////////////
 
 func		loadUsers(iterator shim.StateQueryIteratorInterface) (string, error) {
-	var		is_dev		bool
+	var		isDev		bool
 	var		users		string
 
 	for iterator.HasNext() {
 		result, iter_err := iterator.Next()
 		if iter_err != nil {
-			return "", fmt.Errorf("Cannot iter through users.")
+			return "", fmt.Errorf("Cannot iterate through users.")
 		}
-		_, is_dev = ledger_dev_keys[result.Key]
-		if is_dev == true {
+		_, isDev = ledgerDevKeys[result.Key]
+		if isDev == true {
 			continue
 		}
 		if users == "" {
