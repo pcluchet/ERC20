@@ -6,14 +6,14 @@ import "os"
 import "os/exec"
 
 ////////////////////////////////////////////////////////////////////////////////
-///	PRIVATE	
+///	PRIVATE
 ////////////////////////////////////////////////////////////////////////////////
 
-func	homepage(w http.ResponseWriter, req *http.Request) {
-	var	tx		Request
-	var command	string
-	var b		[]byte
-	var err		error
+func homepage(w http.ResponseWriter, req *http.Request) {
+	var tx Request
+	var command string
+	var b []byte
+	var err error
 
 	if err = tx.Get(req); err != nil {
 		fmt.Fprintln(w, err)
@@ -26,23 +26,27 @@ func	homepage(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "200", parseStdout(string(b)))
+	if tx.Body["Transaction"] == "publicKey" {
+		fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "200", parseStdoutForPubkey(string(b)))
+	} else {
+		fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "200", parseStdout(string(b)))
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-///	PUBLIC 
+///	PUBLIC
 ////////////////////////////////////////////////////////////////////////////////
 
-func	main() {
-	var	ip	string
-	var err	error
+func main() {
+	var ip string
+	var err error
 
 	if ip, err = getIp(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	}
 
 	http.HandleFunc("/", homepage)
-	if err = http.ListenAndServe(ip + ":8000", nil); err != nil {
+	if err = http.ListenAndServe(ip+":8000", nil); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	}
 }

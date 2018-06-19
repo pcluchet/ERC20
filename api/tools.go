@@ -5,13 +5,13 @@ import "strings"
 import "net"
 
 ////////////////////////////////////////////////////////////////////////////////
-///	PUBLIC 
+///	PUBLIC
 ////////////////////////////////////////////////////////////////////////////////
 
-func	getIp() (string, error) {
-	var addrs	[]net.Addr
-	var ip		net.IP
-	var err		error
+func getIp() (string, error) {
+	var addrs []net.Addr
+	var ip net.IP
+	var err error
 
 	if addrs, err = net.InterfaceAddrs(); err != nil {
 		return "", err
@@ -41,29 +41,36 @@ func parseStdout(stdout string) string {
 	return stdout
 }
 
-func		ejbgekjrg(typeofTx string, id string, tx Request) string {
-	var		base	string
-	var		env		string
-	var		command	string
+func parseStdoutForPubkey(stdout string) string {
+	stdout = strings.Split(stdout, "\n")[0]
+	return stdout
+}
+
+func ejbgekjrg(typeofTx string, id string, tx Request) string {
+	var base string
+	var env string
+	var command string
 
 	base = "docker exec CLI bash -c "
 	env = fmt.Sprintf("CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/users/%s@MEDSOS.example.com/msp/ ", id)
 
 	switch typeofTx {
-		case "totalSupply":
-			command = fmt.Sprintf("io totalSupply")
-		case "balanceOf":
-			command = fmt.Sprintf("io balanceOf %s", tx.Body["TokenOwner"])
-		case "allowance":
-			command = fmt.Sprintf("io allowance %s %s", tx.Body["TokenOwner"], tx.Body["Spender"])
-		case "transfer":
-			command = fmt.Sprintf("io transfer %s %s", tx.Body["To"], tx.Body["Tokens"])
-		case "approve":
-			command = fmt.Sprintf("io approve %s %s", tx.Body["Spender"], tx.Body["Tokens"])
-		case "transferFrom":
-			command = fmt.Sprintf("io transferFrom %s %s %s", tx.Body["From"], tx.Body["To"], tx.Body["Tokens"])
-		case "publicKey":
-			command = fmt.Sprintf("io publicKey --silent")
+	case "totalSupply":
+		command = fmt.Sprintf("io totalSupply")
+	case "balanceOf":
+		command = fmt.Sprintf("io balanceOf %s", tx.Body["TokenOwner"])
+	case "allowance":
+		command = fmt.Sprintf("io allowance %s %s", tx.Body["TokenOwner"], tx.Body["Spender"])
+	case "transfer":
+		command = fmt.Sprintf("io transfer %s %s", tx.Body["To"], tx.Body["Tokens"])
+	case "approve":
+		command = fmt.Sprintf("io approve %s %s", tx.Body["Spender"], tx.Body["Tokens"])
+	case "transferFrom":
+		command = fmt.Sprintf("io transferFrom %s %s %s", tx.Body["From"], tx.Body["To"], tx.Body["Tokens"])
+	case "publicKey":
+		command = fmt.Sprintf("io publicKey --silent")
+	case "get":
+		command = fmt.Sprintf("io get %s", tx.Body["Key"])
 	}
 
 	return base + "\"" + env + command + "\""
