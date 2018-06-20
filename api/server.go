@@ -10,23 +10,32 @@ import "os/exec"
 ////////////////////////////////////////////////////////////////////////////////
 
 func	homepage(w http.ResponseWriter, req *http.Request) {
+	var err		error
+	var	txType	string
 	var	tx		Request
 	var command	string
-	var b		[]byte
-	var err		error
+	var output	[]byte
+	var	body	string
 
 	if err = tx.Get(req); err != nil {
 		fmt.Fprintln(w, err)
 		return
 	}
 
-	command = ejbgekjrg(tx.Body["Transaction"], tx.Body["Id"], tx)
-	if b, err = exec.Command("bash", "-c", command).Output(); err != nil {
+	txType = tx.Body["Transaction"]
+	command = ejbgekjrg(txType, tx.Body["Id"], tx)
+	if output, err = exec.Command("bash", "-c", command).Output(); err != nil {
 		fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "500", err)
 		return
 	}
 
-	fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "200", parseStdout(string(b)))
+	body = parseStdout(string(output))
+
+	if txType == "listUsers" || txType == "whoOwesMe"{
+		body = humanReadableKeys(body, txType)
+	}
+
+	fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "200", body)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

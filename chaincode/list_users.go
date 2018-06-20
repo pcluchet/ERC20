@@ -21,12 +21,13 @@ func		loadUsers(iterator shim.StateQueryIteratorInterface) (string, error) {
 			continue
 		}
 		if users == "" {
-			users = fmt.Sprintf("%s", result.Key)
+			users = fmt.Sprintf("\"%s\"", result.Key)
 		} else {
-			users = fmt.Sprintf("%s, %s", users, result.Key)
+			users = fmt.Sprintf("%s,\"%s\"", users, result.Key)
 		}
 	}
 	iterator.Close()
+	users = "[" + users + "]"
 	return users, nil
 }
 

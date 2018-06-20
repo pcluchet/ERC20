@@ -64,6 +64,10 @@ func		ejbgekjrg(typeofTx string, id string, tx Request) string {
 			command = fmt.Sprintf("io transferFrom %s %s %s", tx.Body["From"], tx.Body["To"], tx.Body["Tokens"])
 		case "publicKey":
 			command = fmt.Sprintf("io publicKey --silent")
+		case "listUsers":
+			command = fmt.Sprintf("io listUsers")
+		case "whoOwesMe":
+			command = fmt.Sprintf("io whoOwesMe")
 	}
 
 	return base + "\"" + env + command + "\""

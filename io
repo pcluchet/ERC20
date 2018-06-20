@@ -4,7 +4,8 @@ readonly BASE="peer chaincode invoke -o orderer.example.com:7050"
 readonly TLS="--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
 
 readonly fct=(	"totalSupply" "balanceOf" "allowance" "transfer" "approve"
-				"transferFrom" "getState" "getPublicKey" "listUsers")
+				"transferFrom" "getState" "getPublicKey" "listUsers",
+				"whoOwesMe")
 readonly usage=("io totalSupply"
 				"io balanceOf [address tokenOwner]"
 				"io allowance [address tokenOwner] [address spender]"
@@ -13,7 +14,8 @@ readonly usage=("io totalSupply"
 				"io transferFrom [address from] [address to] [uint tokens]"
 				"io	get [key]"
 				"io publicKey [flag silent]"
-				"io listUsers")
+				"io listUsers"
+				"io whoOwesMe")
 
 # **************************************************************************** #
 #			USAGE															   #
