@@ -5,6 +5,7 @@ import	"os"
 import	"io/ioutil"
 import	"os/exec"
 import	"regexp"
+import	"encoding/json"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// STATIC FUNCTIONS
@@ -73,15 +74,64 @@ func		loadUsers() (map[string]string, error) {
 	return usersMap, nil
 }
 
-//func		translateListUsers(output string) {
-//	var		list	string[]
-//}
+func		translateListUsers(output string, users map[string]string) (string, error) {
+	var		err			error
+	var		list		[]string
+	var		index		int
+	var		user		string
+	var		userName	string
+	var		isPresent	bool
+	var		newOutput	[]byte
+
+	err = json.Unmarshal([]byte(output), &list)
+	if err != nil {
+		return "", fmt.Errorf("Cannot get users list: %s", err)
+	}
+	for index, user = range list {
+		userName, isPresent = users[user]
+		if isPresent == true {
+			list[index] = userName
+		}
+	}
+	newOutput, err = json.Marshal(list)
+	if err != nil {
+		return "", fmt.Errorf("Cannot marshal users list: %s", err)
+	}
+	return string(newOutput), nil
+}
+
+func		translateWhoOwesMe(output string, users map[string]string) (string, error) {
+	var		err			error
+	var		allowances	map[string]uint64
+	var		allowance	uint64
+	var		userName	string
+	var		user		string
+	var		isPresent	bool
+	var		newOutput	[]byte
+
+	err = json.Unmarshal([]byte(output), &allowances)
+	if err != nil {
+		return "", fmt.Errorf("Cannot get allowances: %s", err)
+	}
+	for user, allowance = range allowances {
+		userName, isPresent = users[user]
+		if isPresent == true {
+			delete(allowances, user)
+			allowances[userName] = allowance
+		}
+	}
+	newOutput, err = json.Marshal(allowances)
+	if err != nil {
+		return "", fmt.Errorf("Cannot marshal allowances: %s", err)
+	}
+	return string(newOutput), nil
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /// PUBLIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-func		humanReadableKeys(ouput string, mode string) (string, error) {
+func		humanReadableKeys(output string, mode string) (string, error) {
 	var		err		error
 	var		users	map[string]string
 
@@ -90,10 +140,10 @@ func		humanReadableKeys(ouput string, mode string) (string, error) {
 		return "", fmt.Errorf("Cannot load users public key: %s", err)
 	}
 	fmt.Println(users)
-	//if mode == "listUsers" {
-	//	return translateListUsers(output)
-	//else if mode == "" {
-	//	return translateListUsers(output)
-	//}
+	if mode == "listUsers" {
+		return translateListUsers(output, users)
+	} else if mode == "whoOwesMe" {
+		return translateWhoOwesMe(output, users)
+	}
 	return "", fmt.Errorf("Unknown human readable translation mode [%s]", mode)
 }
