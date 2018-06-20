@@ -5,13 +5,13 @@ import "strings"
 import "net"
 
 ////////////////////////////////////////////////////////////////////////////////
-///	PUBLIC 
+///	PUBLIC
 ////////////////////////////////////////////////////////////////////////////////
 
-func	getIp() (string, error) {
-	var addrs	[]net.Addr
-	var ip		net.IP
-	var err		error
+func getIp() (string, error) {
+	var addrs []net.Addr
+	var ip net.IP
+	var err error
 
 	if addrs, err = net.InterfaceAddrs(); err != nil {
 		return "", err
@@ -41,10 +41,15 @@ func parseStdout(stdout string) string {
 	return stdout
 }
 
-func		ejbgekjrg(typeofTx string, id string, tx Request) string {
-	var		base	string
-	var		env		string
-	var		command	string
+func parseStdoutForPubkey(stdout string) string {
+	stdout = strings.Split(stdout, "\n")[0]
+	return stdout
+}
+
+func ejbgekjrg(typeofTx string, id string, tx Request) string {
+	var base string
+	var env string
+	var command string
 
 	base = "docker exec CLI bash -c "
 	env = fmt.Sprintf("CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/users/%s@MEDSOS.example.com/msp/ ", id)
@@ -68,6 +73,8 @@ func		ejbgekjrg(typeofTx string, id string, tx Request) string {
 			command = fmt.Sprintf("io listUsers")
 		case "whoOwesMe":
 			command = fmt.Sprintf("io whoOwesMe")
+		case "get":
+			command = fmt.Sprintf("io get %s", tx.Body["Key"])
 	}
 
 	return base + "\"" + env + command + "\""

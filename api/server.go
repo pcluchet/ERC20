@@ -6,7 +6,7 @@ import "os"
 import "os/exec"
 
 ////////////////////////////////////////////////////////////////////////////////
-///	PRIVATE	
+///	PRIVATE
 ////////////////////////////////////////////////////////////////////////////////
 
 func	homepage(w http.ResponseWriter, req *http.Request) {
@@ -29,7 +29,11 @@ func	homepage(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	body = parseStdout(string(output))
+	if txType == "publicKey" {
+		body = parseStdoutForPubkey(string(output))
+	} else {
+		body = parseStdoutForPubkey(string(output))
+	}
 
 	if txType == "listUsers" || txType == "whoOwesMe"{
 		body = humanReadableKeys(body, txType)
@@ -39,19 +43,19 @@ func	homepage(w http.ResponseWriter, req *http.Request) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-///	PUBLIC 
+///	PUBLIC
 ////////////////////////////////////////////////////////////////////////////////
 
-func	main() {
-	var	ip	string
-	var err	error
+func main() {
+	var ip string
+	var err error
 
 	if ip, err = getIp(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	}
 
 	http.HandleFunc("/", homepage)
-	if err = http.ListenAndServe(ip + ":8000", nil); err != nil {
+	if err = http.ListenAndServe(ip+":8000", nil); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	}
 }

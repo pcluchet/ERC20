@@ -8,13 +8,13 @@ import "os/exec"
 import "strings"
 
 ////////////////////////////////////////////////////////////////////////////////
-///	PRIVATE	
+///	PRIVATE
 ////////////////////////////////////////////////////////////////////////////////
 
-func	getPublicKey(tx Request, value string) string {
-	var command	string
-	var b		[]byte
-	var err		error
+func getPublicKey(tx Request, value string) string {
+	var command string
+	var b []byte
+	var err error
 
 	command = ejbgekjrg("publicKey", value, tx)
 	if b, err = exec.Command("bash", "-c", command).Output(); err != nil {
@@ -24,9 +24,9 @@ func	getPublicKey(tx Request, value string) string {
 }
 
 func (self *Request) Public() error {
-	var value			string
-	var prs			bool
-	var params =	[]string{"TokenOwner", "Spender", "From", "To"}
+	var value string
+	var prs bool
+	var params = []string{"TokenOwner", "Spender", "From", "To"}
 
 	for index, _ := range params {
 		if value, prs = self.Body[params[index]]; prs == true {
@@ -38,12 +38,12 @@ func (self *Request) Public() error {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-///	PUBLIC 
+///	PUBLIC
 ////////////////////////////////////////////////////////////////////////////////
 
 func (self *Request) Get(req *http.Request) error {
-	var b		[]byte
-	var err		error
+	var b []byte
+	var err error
 
 	if b, err = ioutil.ReadAll(req.Body); err != nil {
 		return fmt.Errorf("ReadAll: %s", err)
