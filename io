@@ -141,14 +141,14 @@ function	getPublicKey {
 	# globbing which does not match will result as empty string
 	shopt -s nullglob
 
-	publicKey=(
-		$(openssl ec \
+	publicKey=$(openssl ec \
 		-in		"${CORE_PEER_MSPCONFIGPATH}/keystore/"* \
 		-pubout	2>&- \
 		| tail -n 3 \
-		| head -n 2))
-	if [[ ${#publicKey[@]} -gt 0 ]]; then
-		echo "${publicKey[0]}${publicKey[1]}"
+		| head -n 2
+		| tr -d '\n')
+	if [[ ${#publicKey} -gt 0 ]]; then
+		echo "${publicKey}"
 	else
 		if [[ -z ${CORE_PEER_MSPCONFIGPATH} ]]; then
 			printf "error: CORE_PEER_MSPCONFIGPATH is not set.\n" >&2

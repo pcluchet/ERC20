@@ -36,7 +36,10 @@ func	homepage(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if txType == "listUsers" || txType == "whoOwesMe"{
-		body = humanReadableKeys(body, txType)
+		body, err = humanReadableKeys(body, txType)
+		if err != nil {
+			fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "500", err)
+		}
 	}
 
 	fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "200", body)
