@@ -145,7 +145,7 @@ function	getPublicKey {
 		-in		"${CORE_PEER_MSPCONFIGPATH}/keystore/"* \
 		-pubout	2>&- \
 		| tail -n 3 \
-		| head -n 2
+		| head -n 2 \
 		| tr -d '\n')
 	if [[ ${#publicKey} -gt 0 ]]; then
 		echo "${publicKey}"
