@@ -17,13 +17,9 @@ func getPublicKey(tx Request, value string) string {
 	var err		error
 
 	command = ejbgekjrg("publicKey", value, tx)
-	fmt.Printf("command [%s]\n", command)
 	if b, err = exec.Command("bash", "-c", command).Output(); err != nil {
-		fmt.Printf("error: %s\n", b)
 		return ""
 	}
-	fmt.Printf("COUCOU\n")
-	fmt.Printf("res [%s]\n", string(b))
 	return strings.Trim(string(b), "\n")
 }
 
@@ -34,9 +30,7 @@ func (self *Request) Public() error {
 
 	for index, _ := range params {
 		if value, prs = self.Body[params[index]]; prs == true {
-			fmt.Printf("%s -> %s\n", params[index], value)
 			self.Body[params[index]] = getPublicKey(*self, value)
-			fmt.Printf("res [%s]\n", self.Body[params[index]])
 		}
 	}
 
