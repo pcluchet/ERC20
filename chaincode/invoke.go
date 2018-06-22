@@ -8,40 +8,69 @@ import	"github.com/hyperledger/fabric/protos/peer"
 /*		PUBLIC																  */
 /* ************************************************************************** */
 
-func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
-	var fct		string
-	var argv	[]string
-	var ret		string
-	var err		error
-
-	fmt.Println("---------------> Invoke <---------------")
-	fct, argv = stub.GetFunctionAndParameters()
-	STUB = stub
-
-	switch fct {
-	// Temporary, not in production
-	case "get":
-		ret, err = _get(argv)
-
-	case "balanceOf":
-		ret, err = balanceOf(argv)
-	case "allowance":
-		ret, err = allowance(argv)
-	case "transfer":
-		ret, err = transfer(argv)
-	case "transferFrom":
-		ret, err = transferFrom(argv)
-	case "approve":
-		ret, err = approve(argv)
-	case "totalSupply":
-		ret, err = totalSupply()
-	case "listUsers":
-		ret, err = listUsers()
-	case "whoOwesMe":
-		ret, err = whoOwesMe()
-	default:
-		err = fmt.Errorf("Illegal function called \n")
+func gethistory(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+	if len(args) != 1 {
+		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
 	}
+
+	value, err := stub.GetHistoryForKey(args[0])
+
+		if err != nil {
+			return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
+		}
+	if value == nil {
+		return "", fmt.Errorf("Asset not found: %s", args[0])
+	}
+
+	var history string
+		history = "\n"
+
+		for value.HasNext() {
+			history = fmt.Sprintf("%s%s", history, fmt.Sprintln(value.Next()))
+		}
+
+	return string(history), nil
+}
+
+func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
+		var fct		string
+		var argv	[]string
+		var ret		string
+		var err		error
+
+		fmt.Println("---------------> Invoke <---------------")
+		fct, argv = stub.GetFunctionAndParameters()
+
+		STUB = stub
+		LOG = shim.NewLogger("Pcoin")
+		LOG.SetLevel(shim.LogInfo)
+
+		switch fct {
+			// Temporary, not in production
+			case "get":
+				ret, err = _get(argv)
+			case "history":
+				ret, err = gethistory(stub, argv)
+
+			case "balanceOf":
+				ret, err = balanceOf(argv)
+			case "allowance":
+				ret, err = allowance(argv)
+			case "transfer":
+				ret, err = transfer(argv)
+			case "transferFrom":
+				ret, err = transferFrom(argv)
+			case "approve":
+				ret, err = approve(argv)
+			case "totalSupply":
+				ret, err = totalSupply()
+			case "listUsers":
+				ret, err = listUsers()
+			case "whoOwesMe":
+				ret, err = whoOwesMe()
+			default:
+				err = fmt.Errorf("Illegal function called \n")
+		}
 
 	if err != nil {
 		return shim.Error(err.Error())

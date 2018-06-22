@@ -16,7 +16,10 @@ func		totalSupply() (string, error) {
 
 	amount, err = STUB.GetState("total_supply")
 	if err != nil {
+		LOG.Error(err)
 		return "", fmt.Errorf("Cannot get total supply: %s", err)
 	}
+
+	LOG.Info("Successfull call to totalSupply") // LOG
 	return string(amount), nil
 }
