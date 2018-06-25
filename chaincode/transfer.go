@@ -47,27 +47,25 @@ func transfer(argv []string) (string, error) {
 	var err error
 
 	if err = parseArgv(argv, "transfer", 2); err != nil {
-		LOG.Error(err)
 		return "", err
 	}
 	if tx, err = getTransferTx(argv); err != nil {
-		LOG.Error(err)
 		return "", err
 	}
 
 	if err = changeStateFrom(tx, _transfer); err != nil {
-		LOG.Error(err)
 		return "", err
 	}
 	if err = changeStateTo(tx); err != nil {
-		LOG.Error(err)
 		return "", err
 	}
 	if err = event(tx.From, tx.To, tx.Amount, "transfer"); err != nil {
-		LOG.Error(err)
 		return "", err
 	}
 
 	LOG.Info("Successfull call to transfer") // LOG
+	LOG.Info("To:", argv[0])
+	LOG.Info("Tokens:", argv[1])
+
 	return fmt.Sprintf("Successfull transaction"), nil
 }

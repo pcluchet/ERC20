@@ -29,6 +29,7 @@ func	homepage(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+
 	if txType == "publicKey" {
 		body = parseStdoutForPubkey(string(output))
 	} else {

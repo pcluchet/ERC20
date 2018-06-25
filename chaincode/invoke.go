@@ -38,8 +38,10 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		var ret		string
 		var err		error
 
-		fmt.Println("---------------> Invoke <---------------")
 		fct, argv = stub.GetFunctionAndParameters()
+		if fct != "balanceOf" { // TEMP
+			fmt.Println("---------------> Invoke <---------------")
+		}
 
 		STUB = stub
 		LOG = shim.NewLogger("Pcoin")
@@ -73,6 +75,7 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		}
 
 	if err != nil {
+		LOG.Error(err)
 		return shim.Error(err.Error())
 	}
 
