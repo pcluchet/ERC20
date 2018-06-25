@@ -24,6 +24,7 @@ type	Transaction	struct {
 }
 
 var		STUB shim.ChaincodeStubInterface
+var		LOG *shim.ChaincodeLogger
 var		ledgerDevKeys map[string]bool = map[string]bool {
 	"totalSupply":	true,
 	"transfer":		true,

@@ -44,13 +44,16 @@ func	balanceOf(args []string) (string, error) {
 
 	// CHECK ARGUMENTS
 	if len(args) != 1 {
+		LOG.Error("Incorrect arguments. Expecting a key") // LOG
 		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
 	}
 	// GET USER INFORMATIONS
 	userInfos, err = getUserInfos(args[0])
 	if err != nil {
+		LOG.Error(err) // LOG
 		return "", err
 	}
+	LOG.Info("Successfull call to balance of") // LOG
 	return strconv.FormatUint(userInfos.Amount, 10), nil
 }
 
@@ -80,17 +83,21 @@ func	allowance(args []string) (string, error) {
 
 	// CHECK PARAMETERS
 	if len(args) != 2 {
+		LOG.Error("Incorrect arguments. Expecting a token owner public key, and a spender public key")// LOG
 		return "", fmt.Errorf("Incorrect arguments. Expecting a token owner public key, and a spender public key")
 	}
 	// GET USER INFORMATIONS
 	userInfos, err = getUserInfos(args[0])
 	if err != nil {
+		LOG.Error(err)// LOG
 		return "", err
 	}
 	// GET ALLOWANCE AMOUNT
 	amount, err = allowanceOfUser(userInfos, args[1])
 	if err != nil {
+		LOG.Error(err)// LOG
 		return "", err
 	}
+	LOG.Info("Successfull call to allowance") // LOG
 	return strconv.FormatUint(amount, 10), nil
 }

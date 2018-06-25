@@ -43,18 +43,23 @@ func approve(argv []string) (string, error) {
 	var err		error
 
 	if err = parseArgv(argv, "approve", 2); err != nil {
+		LOG.Error(err)
 		return "", err
 	}
 	if tx, err = getApproveTx(argv); err != nil {
+		LOG.Error(err)
 		return "", err
 	}
 
 	if err = changeStateFrom(tx, _approve); err != nil {
+		LOG.Error(err)
 		return "", err
 	}
 	if err = event(tx.From, tx.To, tx.Amount, "approval"); err != nil {
+		LOG.Error(err)
 		return "", err
 	}
 
+	LOG.Info("Successfull call to approve") // LOG
 	return fmt.Sprintf("Successfull approval"), nil
 }
