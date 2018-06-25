@@ -39,7 +39,7 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		var err		error
 
 		fct, argv = stub.GetFunctionAndParameters()
-		if fct != "balanceOf" { // TEMP
+		if fct != "balanceOf" && fct != "whoOwesMe"{ // TEMP
 			fmt.Println("---------------> Invoke <---------------")
 		}
 

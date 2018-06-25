@@ -35,7 +35,6 @@ func		loadAllowances(iterator shim.StateQueryIteratorInterface) (string, error) 
 		if err != nil {
 			return "", fmt.Errorf("Cannot iterate through users: %s", err)
 		}
-		fmt.Printf("[%s] -> [%S]\n---\n", result.Key, string(result.Value))
 		allowance = 0
 		allowance, isPresent = user.Allowances[publicKey]
 		if isPresent == true && allowance > 0 {

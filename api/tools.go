@@ -41,6 +41,13 @@ func parseStdout(stdout string) string {
 	return stdout
 }
 
+func parseObj(stdout string) string {
+	stdout = strings.TrimSuffix(stdout, "{")
+	stdout = strings.Replace(stdout, "\"", "\\\"", -1)
+
+	return stdout
+}
+
 func parseStdoutForPubkey(stdout string) string {
 	stdout = strings.Split(stdout, "\n")[0]
 	return stdout

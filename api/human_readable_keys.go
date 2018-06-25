@@ -6,6 +6,7 @@ import	"io/ioutil"
 import	"os/exec"
 import	"regexp"
 import	"encoding/json"
+import	"strconv"
 
 ////////////////////////////////////////////////////////////////////////////////
 /// STATIC FUNCTIONS
@@ -103,12 +104,14 @@ func		translateListUsers(output string, users map[string]string) (string, error)
 func		translateWhoOwesMe(output string, users map[string]string) (string, error) {
 	var		err			error
 	var		allowances	map[string]uint64
+	var		ret			map[string]string
 	var		allowance	uint64
 	var		userName	string
 	var		user		string
 	var		isPresent	bool
 	var		newOutput	[]byte
 
+	ret = make(map[string]string)
 	err = json.Unmarshal([]byte(output), &allowances)
 	if err != nil {
 		return "", fmt.Errorf("Cannot get allowances: %s", err)
@@ -118,9 +121,10 @@ func		translateWhoOwesMe(output string, users map[string]string) (string, error)
 		if isPresent == true {
 			delete(allowances, user)
 			allowances[userName] = allowance
+			ret[userName] = strconv.FormatUint(allowance, 10)
 		}
 	}
-	newOutput, err = json.Marshal(allowances)
+	newOutput, err = json.Marshal(ret)
 	if err != nil {
 		return "", fmt.Errorf("Cannot marshal allowances: %s", err)
 	}
@@ -139,7 +143,6 @@ func		humanReadableKeys(output string, mode string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("Cannot load users public key: %s", err)
 	}
-	fmt.Println(users)
 	if mode == "listUsers" {
 		return translateListUsers(output, users)
 	} else if mode == "whoOwesMe" {

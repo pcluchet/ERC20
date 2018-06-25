@@ -42,6 +42,7 @@ func	homepage(w http.ResponseWriter, req *http.Request) {
 			fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "500", err)
 			return
 		}
+		body = parseObj(body)
 	}
 
 	fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "200", body)
