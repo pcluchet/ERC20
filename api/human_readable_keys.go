@@ -119,8 +119,6 @@ func		translateWhoOwesMe(output string, users map[string]string) (string, error)
 	for user, allowance = range allowances {
 		userName, isPresent = users[user]
 		if isPresent == true {
-			delete(allowances, user)
-			allowances[userName] = allowance
 			ret[userName] = strconv.FormatUint(allowance, 10)
 		}
 	}
@@ -139,14 +137,15 @@ func		humanReadableKeys(output string, mode string) (string, error) {
 	var		err		error
 	var		users	map[string]string
 
-	users, err = loadUsers()
-	if err != nil {
+	if users, err = loadUsers(); err != nil {
 		return "", fmt.Errorf("Cannot load users public key: %s", err)
 	}
+
 	if mode == "listUsers" {
 		return translateListUsers(output, users)
-	} else if mode == "whoOwesMe" {
+	} else if mode == "whoOwesMe" || mode == "whoOweI" {
 		return translateWhoOwesMe(output, users)
 	}
+
 	return "", fmt.Errorf("Unknown human readable translation mode [%s]", mode)
 }

@@ -31,13 +31,13 @@ func		loadAllowances(iterator shim.StateQueryIteratorInterface) (string, error) 
 		if isPresent == true {
 			continue
 		}
+		user.Allowances = make(map[string]uint64)
 		err = json.Unmarshal(result.Value, &user)
 		if err != nil {
 			return "", fmt.Errorf("Cannot iterate through users: %s", err)
 		}
-		allowance = 0
 		allowance, isPresent = user.Allowances[publicKey]
-		if isPresent == true && allowance > 0 {
+		if isPresent == true {
 			allowances[result.Key] = allowance
 		}
 	}

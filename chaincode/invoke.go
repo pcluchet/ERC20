@@ -39,7 +39,7 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		var err		error
 
 		fct, argv = stub.GetFunctionAndParameters()
-		if fct != "balanceOf" && fct != "whoOwesMe"{ // TEMP
+		if fct != "balanceOf" && fct != "whoOwesMe" && fct != "whoOweI" { // TEMP
 			fmt.Println("---------------> Invoke <---------------")
 		}
 
@@ -70,6 +70,8 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 				ret, err = listUsers()
 			case "whoOwesMe":
 				ret, err = whoOwesMe()
+			case "whoOweI":
+				ret, err = whoOweI()
 			default:
 				err = fmt.Errorf("Illegal function called \n")
 		}

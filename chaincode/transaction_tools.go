@@ -4,26 +4,21 @@ package main
 /*		PRIVATE																  */
 /* ************************************************************************** */
 
-/*func	deleteAllowances(ptr *UserInfos) {
-	for key, value := range (*ptr).Allowances {
-		if (*ptr).Amount == 0 {
-			delete((*ptr).Allowances, key)
-		} else if value > (*ptr).Amount{
-			(*ptr).Allowances[key] = (*ptr).Amount
-		}
-	}
-}*/
-
 func	_transfer(ptr *UserInfos, to string, amount uint64) {
 	(*ptr).Amount -= amount
 }
 
 func	_transferFrom(ptr *UserInfos, to string, amount uint64) {
 	(*ptr).Amount -= amount
-	(*ptr).Allowances[to] -= amount
 
-	if (*ptr).Allowances[to] == 0 {
-		delete((*ptr).Allowances, to)
+	test, err := getPublicKey()
+	if (err != nil) {
+		return
+	}
+	(*ptr).Allowances[test] -= amount
+
+	if (*ptr).Allowances[test] == 0 {
+		delete((*ptr).Allowances, test)
 	}
 }
 

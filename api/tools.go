@@ -80,8 +80,12 @@ func ejbgekjrg(typeofTx string, id string, tx Request) string {
 			command = fmt.Sprintf("io listUsers")
 		case "whoOwesMe":
 			command = fmt.Sprintf("io whoOwesMe")
+		case "whoOweI":
+			command = fmt.Sprintf("io whoOweI")
 		case "get":
 			command = fmt.Sprintf("io get %s", tx.Body["Key"])
+		default:
+			return ""
 	}
 
 	return base + "\"" + env + command + "\""

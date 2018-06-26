@@ -5,7 +5,7 @@ readonly TLS="--tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/
 
 readonly fct=(	"totalSupply" "balanceOf" "allowance" "transfer" "approve"
 				"transferFrom" "getState" "getPublicKey" "listUsers",
-				"whoOwesMe")
+				"whoOwesMe", "whoOweI")
 readonly usage=("io totalSupply"
 				"io balanceOf [address tokenOwner]"
 				"io allowance [address tokenOwner] [address spender]"
@@ -15,7 +15,8 @@ readonly usage=("io totalSupply"
 				"io	get [key]"
 				"io publicKey [flag silent]"
 				"io listUsers"
-				"io whoOwesMe")
+				"io whoOwesMe"
+				"io whoOweI")
 
 # **************************************************************************** #
 #			USAGE															   #
@@ -162,14 +163,20 @@ function	getPublicKey {
 }
 
 function	listUsers {
-	printf -- "---------------> List users 👩👦👩👦 <---------------\n\n"
+	printf -- "---------------> List users 👩👦👩👦  <---------------\n\n"
 	$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"listUsers\"]}"
 	[[ ${?} -ne 0 ]] && exit 2 || exit 0
 }
 
 function	whoOwesMe {
-	printf -- "---------------> Who owes me 🤑 <---------------\n\n"
+	printf -- "---------------> Who owes me 🤑  <---------------\n\n"
 	$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"whoOwesMe\"]}"
+	[[ ${?} -ne 0 ]] && exit 2 || exit 0
+}
+
+function	whoOweI {
+	printf -- "---------------> Who owe I 🙀  <---------------\n\n"
+	$BASE $TLS -C ptwist -n ptwist -c "{\"Args\":[\"whoOweI\"]}"
 	[[ ${?} -ne 0 ]] && exit 2 || exit 0
 }
 
@@ -198,6 +205,8 @@ case $1 in
 		listUsers ;;
 	whoOwesMe)
 		whoOwesMe ;;
+	whoOweI)
+		whoOweI ;;
 	*)
 		basicUsage ;;
 esac 2>&1

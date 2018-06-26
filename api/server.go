@@ -23,12 +23,14 @@ func	homepage(w http.ResponseWriter, req *http.Request) {
 	}
 
 	txType = tx.Body["Transaction"]
-	command = ejbgekjrg(txType, tx.Body["Id"], tx)
+	if command = ejbgekjrg(txType, tx.Body["Id"], tx); command == "" {
+		fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"\"}", "500")
+		return
+	}
 	if output, err = exec.Command("bash", "-c", command).Output(); err != nil {
 		fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "500", err)
 		return
 	}
-
 
 	if txType == "publicKey" {
 		body = parseStdoutForPubkey(string(output))
@@ -36,7 +38,7 @@ func	homepage(w http.ResponseWriter, req *http.Request) {
 		body = parseStdout(string(output))
 	}
 
-	if txType == "listUsers" || txType == "whoOwesMe"{
+	if txType == "listUsers" || txType == "whoOwesMe" || txType == "whoOweI" {
 		body, err = humanReadableKeys(body, txType)
 		if err != nil {
 			fmt.Fprintf(w, "{\"result\":\"%s\",\"body\":\"%s\"}", "500", err)
