@@ -22,6 +22,8 @@ CHANNEL_NAME=ptwist
 ################################################################################
 
 function clean {
+	mkdir -p ./config/
+	mkdir -p ./crypto-config
 	rm -rf ./config/*
 	rm -rf ./crypto-config/*
 }
