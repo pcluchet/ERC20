@@ -8,7 +8,12 @@ C_PINK="\033[35;01m"
 C_CYAN="\033[36;01m"
 C_NO="\033[0m"
 
-export PATH=$GOPATH/src/github.com/hyperledger/fabric/build/bin:$PWD/bin:$PATH
+os=$(uname)
+if [[ ${os} == Linux ]]; then
+	export PATH=$GOPATH/src/github.com/hyperledger/fabric/build/bin:$PWD/bin_linux:$PATH
+else
+	export PATH=$GOPATH/src/github.com/hyperledger/fabric/build/bin:$PWD/bin_macos:$PATH
+fi
 export FABRIC_CFG_PATH="$PWD"
 CHANNEL_NAME=ptwist
 
