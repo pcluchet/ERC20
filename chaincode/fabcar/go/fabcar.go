@@ -9,7 +9,7 @@ package main
 import "fmt"
 import "github.com/hyperledger/fabric/core/chaincode/shim"
 import "github.com/hyperledger/fabric/protos/peer"
-/*
+
 import	"crypto/ecdsa"
 import	"crypto/x509"
 import	"encoding/pem"
@@ -68,7 +68,6 @@ func	getPublicKey(stub shim.ChaincodeStubInterface) (string, error) {
 	spender = trimPemPubKey(spender)
 	return spender, nil
 }
-*/
 
 // SimpleAsset implements a simple chaincode to manage an asset
 type SimpleAsset struct {
@@ -96,10 +95,14 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 	var result string
 	var err error
+	result, err = getPublicKey(stub);
+	if err == nil {
+		fmt.Println(result);
+	} else {
+		fmt.Println("ERROR");
+	}
 	if fn == "set" {
 		result, err = set(stub, args)
-//	} //else if fn == "key" {
-		//result, err = getPublicKey(stub)
 	} else { // assume 'get' even if fn is nil
 		result, err = get(stub, args)
 	}
