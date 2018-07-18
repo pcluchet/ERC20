@@ -8,20 +8,31 @@
  * Chaincode Invoke
  */
 
+module.exports = {
+    cc_invoke:
+function (identity, request, channel ) {
+
 var Fabric_Client = require('fabric-client');
 var path = require('path');
 var util = require('util');
 var os = require('os');
+var status = "";
+var message = "";
+var payload = "";
+var ret = "";
+var retur = "";
 
+/*
 if (process.argv.length != 3) {
 	console.log("Usage: node registerUser.js [name]") 
 	return ;
 }
+*/
 //
 var fabric_client = new Fabric_Client();
 
 // setup the fabric network
-var channel = fabric_client.newChannel('ptwist');
+var channel = fabric_client.newChannel(channel);
 var peer = fabric_client.newPeer('grpc://localhost:7051');
 channel.addPeer(peer);
 var order = fabric_client.newOrderer('grpc://localhost:7050')
@@ -34,7 +45,7 @@ console.log('Store path:'+store_path);
 var tx_id = null;
 
 // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
-Fabric_Client.newDefaultKeyValueStore({ path: store_path
+return Fabric_Client.newDefaultKeyValueStore({ path: store_path
 }).then((state_store) => {
 	// assign the store to the fabric client
 	fabric_client.setStateStore(state_store);
@@ -46,13 +57,15 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	fabric_client.setCryptoSuite(crypto_suite);
 
 	// get the enrolled user from persistence, this user will sign all requests
-	return fabric_client.getUserContext(process.argv[2], true);
+	return fabric_client.getUserContext(identity, true);
 }).then((user_from_store) => {
 	if (user_from_store && user_from_store.isEnrolled()) {
-		console.log(`Successfully loaded ${process.argv[2]} from persistence`);
+		//console.log(`Successfully loaded ${process.argv[2]} from persistence`);
 		member_user = user_from_store;
 	} else {
-		throw new Error(`Failed to get ${process.argv[2]}.... run registerUser.js`);
+		//throw new Error(`Failed to get ${process.argv[2]}.... run registerUser.js`);
+		status = 500;
+		message = "user not found";
 	}
 
 	// get a transaction id object based on the current user assigned to fabric client
@@ -62,6 +75,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	// createCar chaincode function - requires 5 args, ex: args: ['CAR12', 'Honda', 'Accord', 'Black', 'Tom'],
 	// changeCarOwner chaincode function - requires 2 args , ex: args: ['CAR10', 'Dave'],
 	// must send the proposal to endorsing peers
+	/*
 	var request = {
 		//targets: let default to the peer assigned to the client
 		chaincodeId: 'fabcar',
@@ -70,6 +84,8 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 		chainId: 'ptwist',
 		txId: tx_id
 	};
+	*/
+	request.txId = tx_id;
 
 	// send the transaction proposal to the peers
 	return channel.sendTransactionProposal(request);
@@ -88,6 +104,15 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 		console.log(util.format(
 			'{ status: %s, payload : "%s", message : "%s" }',
 			proposalResponses[0].response.status, proposalResponses[0].response.payload , proposalResponses[0].response.message));
+
+			status = proposalResponses[0].response.status;
+			payload = proposalResponses[0].response.payload; 
+			message = proposalResponses[0].response.message;
+
+			if (status != 200)
+			{
+				throw(new Error(message));
+			}
 
 		// build up the request for the orderer to have the transaction committed
 		var request = {
@@ -143,23 +168,34 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 
 		return Promise.all(promises);
 	} else {
-		console.error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
+		//console.error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
 		throw new Error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
 	}
 }).then((results) => {
-	console.log('Send transaction promise and event listener promise have completed');
+	//console.log('Send transaction promise and event listener promise have completed');
 	// check the results in the order the promises were added to the promise all list
 	if (results && results[0] && results[0].status === 'SUCCESS') {
-		console.log('Successfully sent transaction to the orderer.');
+	//	console.log('Successfully sent transaction to the orderer.');
 	} else {
-		console.error('Failed to order the transaction. Error code: ' + results[0].status);
+		message = 'Failed to order the transaction. Error code: ' + results[0].status;
+		status = 500;
 	}
 
 	if(results && results[1] && results[1].event_status === 'VALID') {
-		console.log('Successfully committed the change to the ledger by the peer');
+//		console.log('Successfully committed the change to the ledger by the peer');
 	} else {
-		console.log('Transaction failed to be committed to the ledger due to ::'+results[1].event_status);
+		message = 'Transaction failed to be committed to the ledger due to ::'+results[1].event_status;
+		status = 500;
 	}
 }).catch((err) => {
-	console.error('Failed to invoke successfully :: ' + err);
+	//console.error('Failed to invoke successfully :: ' + err);
+	message = 'Failed :: ' + err;
+	status = 500;
+}).then(() => {
+	//console.log(util.format( '{status : "%s", response : "%s", message : "%s" }', status, response, message));
+	ret = util.format( '{status : "%s", payload : "%s", message : "%s" }', status, payload, message);
+	console.log(ret);
+	return ret;
 });
+}
+};

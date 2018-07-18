@@ -11,8 +11,9 @@
 
 module.exports = {
     cc_query:
-function (identity, request) {
+function (identity, request, channel ) {
 	console.log("hi");
+	console.log("req", request);
 
 var Fabric_Client = require('fabric-client');
 var path = require('path');
@@ -34,7 +35,7 @@ var ret = "";
 var retur = "";
 
 // setup the fabric network
-var channel = fabric_client.newChannel('ptwist');
+var channel = fabric_client.newChannel(channel);
 var peer = fabric_client.newPeer('grpc://localhost:7051');
 channel.addPeer(peer);
 
