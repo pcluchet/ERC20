@@ -16,6 +16,7 @@ function usage {
 	echo "./ptwist.sh [init]"
 	echo "./ptwist.sh [up]"
 	echo "./ptwist.sh [down]"
+	echo "./ptwist.sh [upgrade] [version]"
 }
 
 ################################################################################
@@ -28,6 +29,8 @@ if [ $1 ]; then
 			. ./script/init.sh ;;
 		"up" )
 			./script/up.sh ;;
+		"upgrade" )
+			./script/upgrade.sh $2;;
 		"down" )
 			./script/down.sh ;;
 		* )

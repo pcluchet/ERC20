@@ -9,7 +9,7 @@ C_CYAN="\033[36;01m"
 C_NO="\033[0m"
 
 LANGUAGE=${1:-"golang"}
-CC_SRC_PATH=github.com/chaincode/fabcar/go
+CC_SRC_PATH=github.com/chaincode/ERC20/chaincode
 set -e
 
 ################################################################################

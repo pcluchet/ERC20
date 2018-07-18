@@ -4,3 +4,5 @@ network/docker-compose-e2e.yaml
 log.txt
 ptwist.block
 chaincode/chaincode
+io/node_modules/*
+io/node_mudles
