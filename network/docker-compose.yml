@@ -87,6 +87,25 @@ services:
     networks:
       - ptwist
 
+  api.peer0.MEDSOS.example.com:
+    container_name: api.peer0.MEDSOS.example.com
+    image: hub/node_api
+    environment:
+      - ORDERER_ADDR=grpc://orderer.example.com:7050
+      - PEER_ADDR=grpc://peer0.MEDSOS.example.com:7051
+      - PEER_LISTENER_ADDR=grpc://peer0.MEDSOS.example.com:7053
+    working_dir: /usr/src/app/
+    command: bash -c "source parse.sh && npm start"
+    # command: peer node start --peer-chaincodedev=true
+    ports:
+      - 8080:8080
+    #volumes:
+    depends_on:
+      - peer0.MEDSOS.example.com
+    networks:
+      - ptwist
+
+
   peer1.MEDSOS.example.com:
     container_name: peer1.MEDSOS.example.com
     image: hyperledger/fabric-peer

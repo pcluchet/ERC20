@@ -10,7 +10,7 @@
 
 module.exports = {
     cc_invoke:
-function (identity, request, channel ) {
+function (identity, request, channel, peerAddr, ordererAddr, peerListenerAddr) {
 
 var Fabric_Client = require('fabric-client');
 var path = require('path');
@@ -33,9 +33,9 @@ var fabric_client = new Fabric_Client();
 
 // setup the fabric network
 var channel = fabric_client.newChannel(channel);
-var peer = fabric_client.newPeer('grpc://localhost:7051');
+var peer = fabric_client.newPeer(peerAddr);//'grpc://localhost:7051');
 channel.addPeer(peer);
-var order = fabric_client.newOrderer('grpc://localhost:7050')
+var order = fabric_client.newOrderer(ordererAddr);//'grpc://localhost:7050')
 channel.addOrderer(order);
 
 //
@@ -132,7 +132,7 @@ return Fabric_Client.newDefaultKeyValueStore({ path: store_path
 		// get an eventhub once the fabric client has a user assigned. The user
 		// is required bacause the event registration must be signed
 		let event_hub = fabric_client.newEventHub();
-		event_hub.setPeerAddr('grpc://localhost:7053');
+		event_hub.setPeerAddr(peerListenerAddr);//'grpc://localhost:7053');
 
 		// using resolve the promise so that result status may be processed
 		// under the then clause rather than having the catch clause process

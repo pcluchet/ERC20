@@ -105,9 +105,21 @@ var request = {
   chainId: channel,
 };
 
+
+  //var peerAddr = 'grpc://localhost:7051';
+  var peerAddr = process.env.PEER_ADDR;
+  console.log("peerAddr=",peerAddr);
+  //var peerListenerAddr = 'grpc://localhost:7053';
+  var peerListenerAddr = process.env.PEER_LISTENER_ADDR;
+  console.log("peerListenerAddr=",peerListenerAddr);
+  //var ordererAddr = 'grpc://localhost:7050';
+  var ordererAddr = process.env.ORDERER_ADDR;
+  console.log("ordererAddr=",ordererAddr);
+
   //console.log(req.body.param2);
+
   var query = require('./invoke.1.js');
-  query.cc_invoke('user1',request, channel).then(
+  query.cc_invoke('user1',request, channel, peerAddr, ordererAddr, peerListenerAddr).then(
     (result) => {
 
   console.log(result);
