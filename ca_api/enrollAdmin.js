@@ -15,6 +15,9 @@ var path = require('path');
 var util = require('util');
 var os = require('os');
 
+var caAddr = process.env.CA_ADDR;
+  console.log("caAddr=", caAddr);
+
 //
 var fabric_client = new Fabric_Client();
 var fabric_ca_client = null;
@@ -39,7 +42,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
     	verify: false
     };
     // be sure to change the http to https when the CA is running TLS enabled
-    fabric_ca_client = new Fabric_CA_Client('http://localhost:7054', tlsOptions , 'ca.example.com', crypto_suite);
+    fabric_ca_client = new Fabric_CA_Client(caAddr, tlsOptions , 'ca.example.com', crypto_suite);
 
     // first check to see if the admin is already enrolled
     return fabric_client.getUserContext('admin', true);

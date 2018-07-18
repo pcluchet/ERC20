@@ -27,6 +27,23 @@ services:
     networks:
       - ptwist
 
+  api.ca.example.com:
+    container_name: api.ca.example.com
+    image: hub/ca_api
+    environment:
+      - CA_ADDR=http://ca.example.com:7054
+    working_dir: /usr/src/app/
+    command: bash -c "source parse.sh &&  node enrollAdmin.js && npm start"
+    # command: peer node start --peer-chaincodedev=true
+    ports:
+      - 8084:8084
+    #volumes:
+    depends_on:
+      - ca.example.com
+    networks:
+      - ptwist
+
+
   orderer.example.com:
     container_name: orderer.example.com
     image: hyperledger/fabric-orderer

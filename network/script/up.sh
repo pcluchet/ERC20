@@ -18,7 +18,7 @@ set -e
 
 function up {
 	docker-compose -f ./docker-compose.yml down
-	docker-compose -f ./docker-compose.yml up -d ca.example.com orderer.example.com peer0.MEDSOS.example.com couchdb api.peer0.MEDSOS.example.com
+	docker-compose -f ./docker-compose.yml up -d ca.example.com orderer.example.com peer0.MEDSOS.example.com couchdb api.peer0.MEDSOS.example.com api.ca.example.com
 	
 	export FABRIC_START_TIMEOUT=10
 	sleep ${FABRIC_START_TIMEOUT}
