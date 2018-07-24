@@ -21,4 +21,18 @@ PeerOrgs:
     Template:
       Count: 2
     Users:
-      Count: 42
+      Count: 0
+  - Name: BFF
+    Domain: BFF.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+    Users:
+      Count: 0
+  - Name: BLUECITY
+    Domain: BLUECITY.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+    Users:
+      Count: 0

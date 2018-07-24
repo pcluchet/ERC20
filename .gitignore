@@ -1,6 +1,4 @@
 network/crypto-config/*
 network/channel-artifacts/*
-network/docker-compose-e2e.yaml
+chaincode/ptwist/ptwist
 log.txt
-ptwist.block
-chaincode/chaincode
