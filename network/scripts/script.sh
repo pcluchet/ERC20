@@ -10,6 +10,7 @@ echo
 echo "Build multi host network (BMHN) end-to-end test"
 echo
 CHANNEL_NAME="$1"
+CHAINCODE_NAME="ptwist"
 DELAY="3"
 : ${CHANNEL_NAME:="ptwist"}
 : ${TIMEOUT:="60"}
@@ -100,7 +101,7 @@ installChaincode () {
 		for peer in 0 1; do
 			setGlobals ${org} ${peer}
 			#peer chaincode install -n ptwist -v 1.0 -p github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02 >&log.txt
-			peer chaincode install -n ptwist -v 1.0 -p github.com/chaincode/ptwist >&log.txt
+			peer chaincode install -n $CHAINCODE_NAME -v 1.0 -p github.com/chaincode/ptwist >&log.txt
 			res=$?
 			cat log.txt
 				verifyResult $res "Chaincode installation on remote peer peer${peer}.${org} has Failed"
@@ -111,11 +112,9 @@ installChaincode () {
 }
 
 instantiateChaincode () {
-	PEER=$1
-	setGlobals $PEER
-	# while 'peer chaincode' command can get the orderer endpoint from the peer (if join was successful),
-	# lets supply it directly as we know it using the "-o" option
-	peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n mycc -v 1.0 -c '{"Args":["init","a","100","b","200"]}' -P "OR	('Org1MSP.member','Org2MSP.member')" >&log.txt
+	setGlobals BFF 0
+	# peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CHAINCODE_NAME -v 1.0 -c '{"Args":["init","a","100"]}' -P "OR ('MEDSOSMSP.member','BFFMSP.member', 'BLUECITYMSP.member')" >&log.txt
+	peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CHAINCODE_NAME -v 1.0 -c '{"Args":["init","a","100"]}' >&log.txt
 	res=$?
 	cat log.txt
 	verifyResult $res "Chaincode instantiation on PEER$PEER on channel '$CHANNEL_NAME' failed"
@@ -166,7 +165,7 @@ chaincodeInvoke () {
 }
 
 # Create channel
-echo "Creating channel..."
+#echo "Creating channel..."
 createChannel
 
 # Join all the peers to the channel
@@ -177,13 +176,13 @@ joinChannel
 echo "Updating anchor peers..."
 updateAnchorPeers
 
-## Install chaincode on Peer0/Org1 and Peer2/Org2
-echo "Installing chaincode on org1/peer0..."
+## Install chaincode on all peers
+echo "Installing chaincode..."
 installChaincode
 
-# #Instantiate chaincode on Peer2/Org2
-# echo "Instantiating chaincode on org1/peer0..."
-# instantiateChaincode 0
+# Instantiate chaincode on
+echo "Instantiating chaincode..."
+instantiateChaincode 0
 
 # #Query on chaincode on Peer0/Org1
 # echo "Querying chaincode on org1/peer0..."
