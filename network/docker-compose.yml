@@ -51,6 +51,7 @@ services:
         - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
         - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
         - ./channel-artifacts/:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts/
+        - ../chaincode/:/opt/gopath/src/github.com/chaincode/
     networks:
         - ptwist
 
@@ -109,6 +110,7 @@ services:
         - ./crypto-config/peerOrganizations/MEDSOS.example.com/peers/peer0.MEDSOS.example.com/msp:/etc/hyperledger/msp/peer
         - ./crypto-config/peerOrganizations/MEDSOS.example.com/users:/etc/hyperledger/msp/users
         - ./channel-artifacts:/etc/hyperledger/configtx
+        - ../chaincode/:/opt/gopath/src/github.com/chaincode/
     networks:
       - ptwist
 
@@ -158,6 +160,7 @@ services:
         - ./crypto-config/peerOrganizations/MEDSOS.example.com/peers/peer1.MEDSOS.example.com/msp:/etc/hyperledger/msp/peer
         - ./crypto-config/peerOrganizations/MEDSOS.example.com/users:/etc/hyperledger/msp/users
         - ./channel-artifacts:/etc/hyperledger/configtx
+        - ../chaincode/:/opt/gopath/src/github.com/chaincode/
     networks:
       - ptwist
 
@@ -227,6 +230,7 @@ services:
         - ./crypto-config/peerOrganizations/BFF.example.com/peers/peer0.BFF.example.com/msp:/etc/hyperledger/msp/peer
         - ./crypto-config/peerOrganizations/BFF.example.com/users:/etc/hyperledger/msp/users
         - ./channel-artifacts:/etc/hyperledger/configtx
+        - ../chaincode/:/opt/gopath/src/github.com/chaincode/
     networks:
       - ptwist
 
@@ -276,6 +280,7 @@ services:
         - ./crypto-config/peerOrganizations/BFF.example.com/peers/peer1.BFF.example.com/msp:/etc/hyperledger/msp/peer
         - ./crypto-config/peerOrganizations/BFF.example.com/users:/etc/hyperledger/msp/users
         - ./channel-artifacts:/etc/hyperledger/configtx
+        - ../chaincode/:/opt/gopath/src/github.com/chaincode/
     networks:
       - ptwist
 
@@ -345,6 +350,7 @@ services:
         - ./crypto-config/peerOrganizations/BLUECITY.example.com/peers/peer0.BLUECITY.example.com/msp:/etc/hyperledger/msp/peer
         - ./crypto-config/peerOrganizations/BLUECITY.example.com/users:/etc/hyperledger/msp/users
         - ./channel-artifacts:/etc/hyperledger/configtx
+        - ../chaincode/:/opt/gopath/src/github.com/chaincode/
     networks:
       - ptwist
 
@@ -394,6 +400,7 @@ services:
         - ./crypto-config/peerOrganizations/BLUECITY.example.com/peers/peer1.BLUECITY.example.com/msp:/etc/hyperledger/msp/peer
         - ./crypto-config/peerOrganizations/BLUECITY.example.com/users:/etc/hyperledger/msp/users
         - ./channel-artifacts:/etc/hyperledger/configtx
+        - ../chaincode/:/opt/gopath/src/github.com/chaincode/
     networks:
       - ptwist
 
