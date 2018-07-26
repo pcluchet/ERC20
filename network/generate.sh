@@ -31,30 +31,36 @@ function clean {
 
 function _err {
 	if [ $1 != 0 ]; then
-		echo "Failed to generate $1..."
+		echo "Failed to generate $2..."
 		exit 1
 	fi
 }
 
 function generate {	
+	### GENERATE CRYPTO MATERIALS
 	cryptogen generate --config=./crypto-config.yaml
-	result=$?
-	_err $result "crypto material"
-
-	configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./channel-artifacts/genesis.block
-	result=$?
-	_err $result "orderer genesis block"
-
-	configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
-	result=$?
-	_err $result "channel configuration"
+	_err $? "crypto material"
+	### GENEREATE ORDERER GENESIS BLOCK
+	configtxgen \
+		-profile TwoOrgsOrdererGenesis \
+		-outputBlock ./channel-artifacts/genesis.block
+	_err $? "orderer genesis block"
+	### CHANNLE CONFIGURATION
+	configtxgen \
+		-profile TwoOrgsChannel \
+		-outputCreateChannelTx ./channel-artifacts/channel.tx \
+		-channelID $CHANNEL_NAME
+	_err $? "channel configuration"
 }
 
 function anchorPeer {
 	for org in MEDSOS BFF BLUECITY; do
-		configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/${org}MSPanchors.tx -channelID $CHANNEL_NAME -asOrg ${org}MSP
-		result=$?
-		_err $result "anchor peer update for ${org}MSP"
+		configtxgen \
+			-profile TwoOrgsChannel \
+			-outputAnchorPeersUpdate ./channel-artifacts/${org}MSPanchors.tx \
+			-channelID $CHANNEL_NAME \
+			-asOrg ${org}MSP
+		_err $? "anchor peer update for ${org}MSP"
 	done
 }
 

@@ -50,10 +50,6 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		result, err = set(stub, args)
 	} else if fn == "get" {
 		result, err = get(stub, args)
-	} else if fn == "gethistory" {
-		result, err = gethistory(stub, args)
-	} else if fn == "get_creator" {
-		result, err = get_creator(stub)
 	} else {
 		return shim.Error(err.Error())
 	}
@@ -97,28 +93,28 @@ func get(stub shim.ChaincodeStubInterface, args []string) (string, error) {
 }
 
 // Get returns the value of the specified asset key
-func	gethistory(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	var st string
-	if len(args) != 1 {
-		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
-	}
-
-	value, err := stub.GetHistoryForKey(args[0])
-	if err != nil {
-		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
-	}
-	if value == nil {
-		return "", fmt.Errorf("Asset not found: %s", args[0])
-	}
-
-	for value.HasNext() {
-		ste, err :=  value.Next()
-		st = fmt.Sprintf("%s \n %s",st,ste)
-		if err != nil {
-		}
-	}
-	return string(st), nil
-}
+//func	gethistory(stub shim.ChaincodeStubInterface, args []string) (string, error) {
+//	var st string
+//	if len(args) != 1 {
+//		return "", fmt.Errorf("Incorrect arguments. Expecting a key")
+//	}
+//
+//	value, err := stub.GetHistoryForKey(args[0])
+//	if err != nil {
+//		return "", fmt.Errorf("Failed to get asset: %s with error: %s", args[0], err)
+//	}
+//	if value == nil {
+//		return "", fmt.Errorf("Asset not found: %s", args[0])
+//	}
+//
+//	for value.HasNext() {
+//		ste, err :=  value.Next()
+//		st = fmt.Sprintf("%s \n %s",st,ste)
+//		if err != nil {
+//		}
+//	}
+//	return string(st), nil
+//}
 
 // main function starts up the chaincode in the container during instantiate
 func main() {

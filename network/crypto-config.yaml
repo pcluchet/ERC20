@@ -1,20 +1,12 @@
-# Copyright IBM Corp. All Rights Reserved.
-#
-# SPDX-License-Identifier: Apache-2.0
-#
+# Copyright lol
 
 OrdererOrgs:
-  # ---------------------------------------------------------------------------
-  # Orderer
-  # ---------------------------------------------------------------------------
   - Name: Orderer
     Domain: example.com
     Specs:
       - Hostname: orderer
+
 PeerOrgs:
-  # ---------------------------------------------------------------------------
-  # Organization MEDSOS
-  # ---------------------------------------------------------------------------
   - Name: MEDSOS
     Domain: MEDSOS.example.com
     EnableNodeOUs: true
@@ -22,10 +14,6 @@ PeerOrgs:
       Count: 2
     Users:
       Count: 0
-
-  # ---------------------------------------------------------------------------
-  # Organization BFF
-  # ---------------------------------------------------------------------------
   - Name: BFF
     Domain: BFF.example.com
     EnableNodeOUs: true
@@ -33,10 +21,6 @@ PeerOrgs:
       Count: 2
     Users:
       Count: 0
-
-  # ---------------------------------------------------------------------------
-  # Organization BLUECITY
-  # ---------------------------------------------------------------------------
   - Name: BLUECITY
     Domain: BLUECITY.example.com
     EnableNodeOUs: true

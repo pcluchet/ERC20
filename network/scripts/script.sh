@@ -1,11 +1,11 @@
 #!/bin/bash
 
 echo
-echo " ____    _____      _      ____    _____ "
-echo "/ ___|  |_   _|    / \    |  _ \  |_   _|"
-echo "\___ \    | |     / _ \   | |_) |   | |  "
-echo " ___) |   | |    / ___ \  |  _ <    | |  "
-echo "|____/    |_|   /_/   \_\ |_| \_\   |_|  "
+echo " ____		_____			_			____		_____ "
+echo "/ ___|	|_	 _|		/ \		|	_ \	|_	 _|"
+echo "\___ \		| |		 / _ \	 | |_) |	 | |	"
+echo " ___) |	 | |		/ ___ \	|	_ <		| |	"
+echo "|____/		|_|	 /_/	 \_\ |_| \_\	 |_|	"
 echo
 echo "Build multi host network (BMHN) end-to-end test"
 echo
@@ -24,9 +24,9 @@ echo "Channel name : "$CHANNEL_NAME
 verifyResult () {
 	if [ $1 -ne 0 ] ; then
 		echo "!!!!!!!!!!!!!!! "$2" !!!!!!!!!!!!!!!!"
-    echo "========= ERROR !!! FAILED to execute End-2-End Scenario ==========="
+		echo "========= ERROR !!! FAILED to execute End-2-End Scenario ==========="
 		echo
-   		exit 1
+	 		exit 1
 	fi
 }
 
@@ -46,7 +46,7 @@ createChannel() {
 	setGlobals MEDSOS 0
 
 
-	peer channel create -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./fuck/channel-artifacts/channel.tx >&log.txt
+	peer channel create -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx >&log.txt
 	res=$?
 	cat log.txt
 	verifyResult $res "Channel creation failed"
@@ -57,8 +57,8 @@ createChannel() {
 updateAnchorPeers() {
 	for org in MEDSOS BFF BLUECITY; do
 		setGlobals $org 0
-	  	
-		peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./fuck/channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx >&log.txt
+			
+		peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx >&log.txt
 		res=$?
 		cat log.txt
 		verifyResult $res "Anchor peer update failed"
@@ -70,7 +70,7 @@ updateAnchorPeers() {
 
 ## Sometimes Join takes time hence RETRY atleast for 5 times
 joinWithRetry () {
-	peer channel join -b $CHANNEL_NAME.block  >&log.txt
+	peer channel join -b $CHANNEL_NAME.block	>&log.txt
 	res=$?
 	cat log.txt
 	if [ $res -ne 0 -a $COUNTER -lt $MAX_RETRY ]; then
@@ -81,7 +81,7 @@ joinWithRetry () {
 	else
 		COUNTER=1
 	fi
-  verifyResult $res "After $MAX_RETRY attempts, PEER$ch has failed to Join the Channel"
+	verifyResult $res "After $MAX_RETRY attempts, PEER$ch has failed to Join the Channel"
 }
 
 joinChannel () {
@@ -112,9 +112,9 @@ installChaincode () {
 }
 
 instantiateChaincode () {
-	setGlobals BFF 0
-	# peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CHAINCODE_NAME -v 1.0 -c '{"Args":["init","a","100"]}' -P "OR ('MEDSOSMSP.member','BFFMSP.member', 'BLUECITYMSP.member')" >&log.txt
-	peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CHAINCODE_NAME -v 1.0 -c '{"Args":["init","a","100"]}' >&log.txt
+	setGlobals MEDSOS 0
+	#peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CHAINCODE_NAME -v 1.0 -c '{"Args":["a","100"]}' -P "OR ('MEDSOSMSP.member','BFFMSP.member', 'BLUECITYMSP.member')" >&log.txt
+	peer chaincode instantiate -o orderer.example.com:7050 -C $CHANNEL_NAME -n $CHAINCODE_NAME -v 1.0 -c '{"Args":["a","100"]}' >&log.txt
 	res=$?
 	cat log.txt
 	verifyResult $res "Chaincode instantiation on PEER$PEER on channel '$CHANNEL_NAME' failed"
@@ -123,32 +123,31 @@ instantiateChaincode () {
 }
 
 chaincodeQuery () {
-  PEER=$1
-  echo "===================== Querying on PEER$PEER on channel '$CHANNEL_NAME'... ===================== "
-  setGlobals $PEER
-  local rc=1
-  local starttime=$(date +%s)
+	org=${1}
+	peer=${2}
+	echo "===================== Querying on peer${peer}.${org} on channel '$CHANNEL_NAME'... ===================== "
+	setGlobals ${org} ${peer}
+	local rc=1
+	local starttime=$(date +%s)
 
-  # continue to poll
-  # we either get a successful response, or reach TIMEOUT
-  while test "$(($(date +%s)-starttime))" -lt "$TIMEOUT" -a $rc -ne 0
-  do
-     sleep $DELAY
-     echo "Attempting to Query PEER$PEER ...$(($(date +%s)-starttime)) secs"
-     peer chaincode query -C $CHANNEL_NAME -n mycc -c '{"Args":["query","a"]}' >&log.txt
-     test $? -eq 0 && VALUE=$(cat log.txt | awk '/Query Result/ {print $NF}')
-     test "$VALUE" = "$2" && let rc=0
-  done
-  echo
-  cat log.txt
-  if test $rc -eq 0 ; then
-	echo "===================== Query on PEER$PEER on channel '$CHANNEL_NAME' is successful ===================== "
-  else
-	echo "!!!!!!!!!!!!!!! Query result on PEER$PEER is INVALID !!!!!!!!!!!!!!!!"
-        echo "================== ERROR !!! FAILED to execute End-2-End Scenario =================="
+	# continue to poll
+	# we either get a successful response, or reach TIMEOUT
+	while test "$(($(date +%s)-starttime))" -lt "$TIMEOUT" -a $rc -ne 0
+	do
+		 sleep $DELAY
+		 echo "Attempting to Query peer${peer}.${org} ...$(($(date +%s)-starttime)) secs"
+		 peer chaincode query -C $CHANNEL_NAME -n ${CHAINCODE_NAME} -c '{"Args":["a"]}'
+		 rc=$?
+	done
 	echo
-	exit 1
-  fi
+	if test $rc -eq 0 ; then
+		echo "===================== Query on peer${peer}.${org} on channel '$CHANNEL_NAME' is successful ===================== "
+	else
+		echo "!!!!!!!!!!!!!!! Query result on peer${peer}.${org} is INVALID !!!!!!!!!!!!!!!!"
+					echo "================== ERROR !!! FAILED to execute End-2-End Scenario =================="
+		echo
+		exit 1
+	fi
 }
 
 chaincodeInvoke () {
@@ -166,7 +165,7 @@ chaincodeInvoke () {
 
 # Create channel
 #echo "Creating channel..."
-createChannel
+#createChannel
 
 # Join all the peers to the channel
 echo "Having all peers join the channel..."
@@ -182,11 +181,12 @@ installChaincode
 
 # Instantiate chaincode on
 echo "Instantiating chaincode..."
-instantiateChaincode 0
+instantiateChaincode
 
-# #Query on chaincode on Peer0/Org1
-# echo "Querying chaincode on org1/peer0..."
-# chaincodeQuery 0 100
+# Query on chaincode on Peer0/Org1
+echo "Querying chaincode on BFF/peer0..."
+#chaincodeQuery BFF 0
+chaincodeQuery MEDSOS 0
 
 # #Invoke on chaincode on Peer0/Org1
 # echo "Sending invoke transaction on org1/peer0..."
@@ -201,11 +201,11 @@ echo "========= All GOOD, BMHN execution completed =========== "
 echo
 
 echo
-echo " _____   _   _   ____   "
-echo "| ____| | \ | | |  _ \  "
-echo "|  _|   |  \| | | | | | "
-echo "| |___  | |\  | | |_| | "
-echo "|_____| |_| \_| |____/  "
+echo " _____	 _	 _	 ____	 "
+echo "| ____| | \ | | |	_ \	"
+echo "|	_|	 |	\| | | | | | "
+echo "| |___	| |\	| | |_| | "
+echo "|_____| |_| \_| |____/	"
 echo
 
 exit 0
