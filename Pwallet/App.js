@@ -11,18 +11,27 @@ import Camera from 'react-native-camera';
 
 
 const APIURL = "http://192.168.0.3:8085";
+const CHANNEL = "ptwist";
+const CHAINCODE = "fabcar";
 
-export const getUserBalance = (username) => {
-    return fetch(`${APIURL}`, {
+export const getUserBalance = (username, password, pubkey) => {
+  
+    var argarray = [];
+    argarray.push(encodeURI(pubkey));
+    return fetch(`${APIURL}/query`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          Transaction: "balanceOf",
-          Id: username,
-          TokenOwner: username,
+          func: "balanceOf",
+
+          args : JSON.stringify(argarray),
+          username: username,
+          password: password,
+          channel: CHANNEL,
+          chaincode : CHAINCODE,
         }),
         })
         .then((response) => response.json())
@@ -98,7 +107,33 @@ export const getAllowancesTo = (username) => {
         });
 }
 
-export const TransferTokens = (username, to, amount) => {
+export const TransferTokens = (username, password, to, amount) => {
+  var argarray = [];
+  argarray[0] = to;
+  argarray[1] = amount;
+  return fetch(`${APIURL}/invoke`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        func: "transfer",
+        args : JSON.stringify(argarray),
+        username: username,
+        password: password,
+        channel: CHANNEL,
+        chaincode : CHAINCODE,
+      }),
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+          return responseJson;
+      })
+      .catch((error) => {
+          console.error(error);
+      });
+      /*
     return fetch(`${APIURL}`, {
         method: 'POST',
         headers: {
@@ -119,6 +154,7 @@ export const TransferTokens = (username, to, amount) => {
         .catch((error) => {
             console.error(error);
         });
+        */
 
 }
 
@@ -178,7 +214,7 @@ export default class App extends Component {
     super(props)
       
     this.interval = setInterval(() => {
-      //this.ft_getbalance();
+      this.ft_getbalance();
       //this.ft_getAllowancesFrom();
       //this.ft_getAllowancesTo();
     }, 6500);
@@ -453,8 +489,9 @@ export default class App extends Component {
   }
 
   ft_balanceOfSafe = (json) => {
-        if (json.result == 200) {
-            return json.body;
+    console.log("BALANCE RECEIVED = "+ JSON.stringify(json))
+        if (json.status == "ok" && json.response != "") {
+            return json.response;
         }
         else
             return "0"
@@ -462,7 +499,7 @@ export default class App extends Component {
 
   ft_getbalance = () => {
     if (this.state.username !== "") {
-        getUserBalance(this.state.username).then(
+        getUserBalance(this.state.username, this.state.password, this.state.pubkey).then(
           json => this.setState({
             balance: this.ft_balanceOfSafe(json),
         }))
@@ -702,11 +739,11 @@ ft_transfer = () => {
         if (this.state.transferfrom == "")
         {
           console.log("transfer normal");
-        TransferTokens(this.state.username, this.state.transferto, this.state.transferamount) .then(json => {
+        TransferTokens(this.state.username, this.state.password, this.state.transferto, this.state.transferamount) .then(json => {
 
             console.log("DEBUG: jsontransfer :" + json);
             console.log("DEBUG: jsontransferst :" + json.result);
-            if (json.result == "200")
+            if (json.status == "200")
             {
               alert("Transfer successfull ! ✅");
             }
