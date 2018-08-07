@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Text, TextInput, Icon , TouchableOpacity, ScrollView, View, StyleSheet,
-  ActivityIndicator,
+  ActivityIndicator, AsyncStorage,
 } from 'react-native';
 //import { Constants } from 'expo';
 import Swiper from 'react-native-swiper';
 import TimerMixin from 'react-timer-mixin';
 import QRCode from 'react-native-qrcode';
+//import BarcodeScanner from 'react-native-barcodescanner';
 
 
 const APIURL = "http://192.168.0.3:8085";
@@ -190,6 +191,7 @@ export default class App extends Component {
       logged : true,
       name: '',
       username: 'john',
+      contactlist: '',
       balance: '0',
       transferamount: '', // nom de la bière
       transferfrom: '', // nom de la bière
@@ -200,10 +202,41 @@ export default class App extends Component {
       transferPending : false,
       allowancesFrom: '',
       allowancesTo: '',
+      scanningContact: false,
       BalanceIsLoading: false, // la requête API est-elle en cours ?
       UserListIsLoading: false // la requête API est-elle en cours ?
     }
+    this.RefreshContactList();
   }
+
+
+
+  //local data storage
+
+  _storeData = async(key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (error) {
+      console.log("ERROR SAVING PERSISTENT DATA");
+      // Error saving data
+    }
+  }
+
+  _retrieveData =  async (key) => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      if (value !== null) {
+        // We have data!!
+        console.log("DATA = " + value);
+        return value;
+      }
+     } catch (error) {
+       console.log("error retreiving persistent data");
+       return null;
+       // Error retrieving data
+     }
+  }
+  
   
 ////////////////////////////////////////////////////////////////////////////////
 //  Transfer
@@ -460,6 +493,118 @@ export default class App extends Component {
 }
 
 
+RefreshContactList =  () => {
+
+
+
+  //this._storeData("@Pwallet:contacts",'[{"username" : "john", "pubkey" : "abc" },{"username" : "joe", "pubkey" : "def" } ]');
+  var reee;
+      reee = AsyncStorage.getItem("@Pwallet:contacts").then(
+        (localdata) => {
+  this.setState({"contactlist": localdata});
+
+
+        }
+      );
+  }
+
+  ParseContactList = (localdata) => {
+
+    var ret = "";
+  try {
+  var localcontacts = JSON.parse(localdata);
+  }
+  catch (e)
+  {
+    return ret;
+  }
+  if (!localcontacts)
+  return "";
+  //if (!localcontacts)
+  //return "";
+
+
+
+  var arrayLength = localcontacts.length;
+  for (var i = 0; i < arrayLength; i++) {
+    console.log(JSON.stringify(localcontacts[i]));
+    //  alert(myStringArray[i]);
+    //Do something
+    ret += 'Username : ' + localcontacts[i].username;
+
+    ret = ret.concat("\n");
+    ret += 'Adress : ' + localcontacts[i].pubkey;
+    ret = ret.concat("\n\n");
+    //ret += '/n';
+  }
+  return ret;
+
+  }
+
+  /*
+  return (
+    <ScrollView  style={styles.scrollview}>
+<Text style={{fontSize: 20, textAlign: 'left', fontWeight: '100'}}>
+this guy
+</Text>
+
+<Text style={{fontSize: 20, textAlign: 'left', fontWeight: '100'}}>
+other guy
+</Text>
+</ScrollView>
+);
+*/
+
+  contacts = () => {
+  //this.myContacts();
+  
+  var myContacts = this.ParseContactList(this.state.contactlist);
+  //myContacts = "";
+  console.log("mycontactsXYTCUYGVKUBHILJHLVYCFTXDHJKNBVCJFGHXDCGVJKLNMJBVHCGXDFWSXHCVK" +  myContacts);
+    return (
+      <View style={styles.container}>
+
+      <Text style={{fontSize: 20, textAlign: 'center', fontWeight: 'bold', marginTop: '2%'}}>
+            My Saved addresses :
+          </Text>
+          <ScrollView  style={styles.scrollview}>
+          <Text style={{fontSize: 20, textAlign: 'left', fontWeight: '100'}}>
+            {myContacts}
+          </Text>
+          </ScrollView>
+            <TouchableOpacity onPress={() => this.setState({ scanningContact : true })}>
+            <Text style={{marginTop: '10%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
+              Add a contact
+            </Text>
+          </TouchableOpacity>
+      </View>
+
+    );
+}
+
+scancontact = () => {
+  //this.myContacts();
+  
+  //myContacts = "";
+    return (
+      <View style={styles.container}>
+
+      <Text style={{fontSize: 20, textAlign: 'center', fontWeight: 'bold', marginTop: '2%'}}>
+            Scan an address :
+      </Text>
+      <TouchableOpacity onPress={() => this.setState({ scanningContact : false })}>
+            <Text style={{marginTop: '10%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
+              Back/Cancel
+            </Text>
+          </TouchableOpacity>
+      </View>
+
+    );
+}
+
+
+
+
 
 
 
@@ -612,6 +757,8 @@ ft_approve = () => {
      var allowance = this.allowance();
      var balance = this.balance();
      var transfer = this.transfer();
+     var contacts = this.contacts();
+     var scancontact = this.scancontact();
 
      if (this.state.logged != true)
      {
@@ -621,10 +768,25 @@ ft_approve = () => {
         </View>
          );
      }
+    else if (this.state.scanningContact == true)
+     {
+       return (
+        <View style={styles.slide}>
+          {scancontact}
+        </View>
+         );
+     }
+
      else
      {
     return (
       <Swiper style={styles.wrapper} showsButtons={true} showsPagination={false}>
+
+
+        <View style={styles.slide}>
+          {logoutButton}
+          {contacts}
+        </View>
 
         <View style={styles.slide}>
           {logoutButton}
