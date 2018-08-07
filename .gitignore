@@ -6,4 +6,7 @@ ptwist.block
 chaincode/chaincode
 io/node_modules/*
 ca_api/node_modules/*
-io/node_mudles
+io/node_modules
+Pwallet/node_modules
+Pwallet/node_modules/*
+ca_api
