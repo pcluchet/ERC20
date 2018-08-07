@@ -14,5 +14,5 @@ set -e
 
 docker exec -e "CORE_PEER_LOCALMSPID=MEDSOSMSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/users/Admin@MEDSOS.example.com/msp" cli peer chaincode install -n fabcar -v $1 -p "$CC_SRC_PATH" -l "$LANGUAGE"
 	
-docker exec -e "CORE_PEER_LOCALMSPID=MEDSOSMSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/users/Admin@MEDSOS.example.com/msp" cli peer chaincode upgrade -o orderer.example.com:7050 -C ptwist -n fabcar -l "$LANGUAGE" -v $1 -c '{"function": "init", "Args":["lol", "lol"]}' -P "OR ('MEDSOSMSP.member')"
+docker exec -e "CORE_PEER_LOCALMSPID=MEDSOSMSP" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/MEDSOS.example.com/users/Admin@MEDSOS.example.com/msp" cli peer chaincode upgrade -o orderer.example.com:7050 -C ptwist -n fabcar -l "$LANGUAGE" -v $1 -c '{"function": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEINc+AOM+Uvx07rY5yW0YdlgAUN458JyKyPXZwKQOtcIZsuiLrrQd62IxncTAY30oBsfCCYI0lkDnK73RuZXsgw==", "Args":["lol", "lol"]}' -P "OR ('MEDSOSMSP.member')"
 	

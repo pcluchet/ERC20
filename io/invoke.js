@@ -9,6 +9,7 @@
  */
 
 var Fabric_Client = require('fabric-client');
+var User = require('fabric-client/lib/User.js');
 var path = require('path');
 var util = require('util');
 var os = require('os');
@@ -33,6 +34,7 @@ var store_path = path.join(__dirname, 'hfc-key-store');
 console.log('Store path:'+store_path);
 var tx_id = null;
 
+/*
 // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
 Fabric_Client.newDefaultKeyValueStore({ path: store_path
 }).then((state_store) => {
@@ -54,8 +56,57 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	} else {
 		throw new Error(`Failed to get ${process.argv[2]}.... run registerUser.js`);
 	}
+	*/
 
 	// get a transaction id object based on the current user assigned to fabric client
+
+	//var usrstr = '{"name":"lole","mspid":"MEDSOSMSP","roles":null,"affiliation":"","enrollmentSecret":"","enrollment":{"signingIdentity":"ba1378c0b330e836fd7e7916e558751e3bd0bc3d09518d44ecd83b37c5173bb4","identity":{"certificate":"-----BEGIN CERTIFICATE-----\nMIICkDCCAjegAwIBAgIUWMIOvUvpcmPedx4ZP3bI5ZD3VpAwCgYIKoZIzj0EAwIw\ndzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh\nbiBGcmFuY2lzY28xGzAZBgNVBAoTEk1FRFNPUy5leGFtcGxlLmNvbTEeMBwGA1UE\nAxMVY2EuTUVEU09TLmV4YW1wbGUuY29tMB4XDTE4MDcxOTEyMDkwMFoXDTE5MDcx\nOTEyMTQwMFowQTEwMA0GA1UECxMGY2xpZW50MAsGA1UECxMEb3JnMTASBgNVBAsT\nC2RlcGFydG1lbnQxMQ0wCwYDVQQDEwRsb2xlMFkwEwYHKoZIzj0CAQYIKoZIzj0D\nAQcDQgAEkT0xHOjB9lGUW6Twlqok5UBkDT4XM/yRUjlul//WaWEc5TivDvdI9Dvr\ne9r1G5BnOImZs+rtkFlSdZck79fBV6OB1jCB0zAOBgNVHQ8BAf8EBAMCB4AwDAYD\nVR0TAQH/BAIwADAdBgNVHQ4EFgQU+8UKY+XdStfS3EyRx03cbUJtxeswKwYDVR0j\nBCQwIoAg3y48mSyiCvkDFaQLmUjslFyhpdv9556elGnmLWpPxgswZwYIKgMEBQYH\nCAEEW3siYXR0cnMiOnsiaGYuQWZmaWxpYXRpb24iOiJvcmcxLmRlcGFydG1lbnQx\nIiwiaGYuRW5yb2xsbWVudElEIjoibG9sZSIsImhmLlR5cGUiOiJjbGllbnQifX0w\nCgYIKoZIzj0EAwIDRwAwRAIgdOWV8C8GVU1EaQc1VtvMhRvzqvVtfFSe6X8Rh96g\nd+oCIH2gv2pwQcsi8SOxAUnjzjW2EM8A36alvQdTIjEFWLmA\n-----END CERTIFICATE-----\n"}}}'
+
+	//var usrstr = '{"name":"lole","mspid":"MEDSOSMSP","roles":null,"affiliation":"","enrollmentSecret":"","enrollment":{"signingIdentity":"ba1378c0b330e836fd7e7916e558751e3bd0bc3d09518d44ecd83b37c5173bb4","identity":{"certificate":"-----BEGIN CERTIFICATE-----MIICkDCCAjegAwIBAgIUWMIOvUvpcmPedx4ZP3bI5ZD3VpAwCgYIKoZIzj0EAwIw\ndzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh\nbiBGcmFuY2lzY28xGzAZBgNVBAoTEk1FRFNPUy5leGFtcGxlLmNvbTEeMBwGA1UE\nAxMVY2EuTUVEU09TLmV4YW1wbGUuY29tMB4XDTE4MDcxOTEyMDkwMFoXDTE5MDcx\nOTEyMTQwMFowQTEwMA0GA1UECxMGY2xpZW50MAsGA1UECxMEb3JnMTASBgNVBAsT\nC2RlcGFydG1lbnQxMQ0wCwYDVQQDEwRsb2xlMFkwEwYHKoZIzj0CAQYIKoZIzj0D\nAQcDQgAEkT0xHOjB9lGUW6Twlqok5UBkDT4XM/yRUjlul//WaWEc5TivDvdI9Dvr\ne9r1G5BnOImZs+rtkFlSdZck79fBV6OB1jCB0zAOBgNVHQ8BAf8EBAMCB4AwDAYD\nVR0TAQH/BAIwADAdBgNVHQ4EFgQU+8UKY+XdStfS3EyRx03cbUJtxeswKwYDVR0j\nBCQwIoAg3y48mSyiCvkDFaQLmUjslFyhpdv9556elGnmLWpPxgswZwYIKgMEBQYH\nCAEEW3siYXR0cnMiOnsiaGYuQWZmaWxpYXRpb24iOiJvcmcxLmRlcGFydG1lbnQx\nIiwiaGYuRW5yb2xsbWVudElEIjoibG9sZSIsImhmLlR5cGUiOiJjbGllbnQifX0w\nCgYIKoZIzj0EAwIDRwAwRAIgdOWV8C8GVU1EaQc1VtvMhRvzqvVtfFSe6X8Rh96g\nd+oCIH2gv2pwQcsi8SOxAUnjzjW2EM8A36alvQdTIjEFWLmA\n-----END CERTIFICATE-----\n"}}}';
+
+//	var usrstr = "%7B%22name%22:%22loltt%22,%22mspid%22:%22MEDSOSMSP%22,%22roles%22:null,%22affiliation%22:%22%22,%22enrollmentSecret%22:%22%22,%22enrollment%22:%7B%22signingIdentity%22:%22bae7aeca34004cf97f9f09ee4b39262ebd127c8b7206e937a69f3c4227c47a60%22,%22identity%22:%7B%22certificate%22:%22-----BEGIN%20CERTIFICATE-----%5CnMIICkjCCAjmgAwIBAgIUQ4VDnI2djAHxezLoIziNdqoa7dIwCgYIKoZIzj0EAwIw%5CndzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNh%5CnbiBGcmFuY2lzY28xGzAZBgNVBAoTEk1FRFNPUy5leGFtcGxlLmNvbTEeMBwGA1UE%5CnAxMVY2EuTUVEU09TLmV4YW1wbGUuY29tMB4XDTE4MDcxOTEyNDIwMFoXDTE5MDcx%5CnOTEyNDcwMFowQjEwMA0GA1UECxMGY2xpZW50MAsGA1UECxMEb3JnMTASBgNVBAsT%5CnC2RlcGFydG1lbnQxMQ4wDAYDVQQDEwVsb2x0dDBZMBMGByqGSM49AgEGCCqGSM49%5CnAwEHA0IABGb9c0kyZsoF5yXnX80V+G9g4jjDBIUL+n+nYnAXS4r7BwA7apvm55Is%5Cn6aXEU8KCYej2dGlBywPXUI6YlPeyjzWjgdcwgdQwDgYDVR0PAQH/BAQDAgeAMAwG%5CnA1UdEwEB/wQCMAAwHQYDVR0OBBYEFGis2YUyfXMhe3EstCYN/5YHId1ZMCsGA1Ud%5CnIwQkMCKAIN8uPJksogr5AxWkC5lI7JRcoaXb/eeenpRp5i1qT8YLMGgGCCoDBAUG%5CnBwgBBFx7ImF0dHJzIjp7ImhmLkFmZmlsaWF0aW9uIjoib3JnMS5kZXBhcnRtZW50%5CnMSIsImhmLkVucm9sbG1lbnRJRCI6ImxvbHR0IiwiaGYuVHlwZSI6ImNsaWVudCJ9%5CnfTAKBggqhkjOPQQDAgNHADBEAiBXEAz2funfAUq/DkktuZERJpoh90qZFxi8fHfb%5CnEDYk4gIge94k8WHA2oNcVd9GaIyVuL5Nf/Ws+HOAyAQyvbznHoY=%5Cn-----END%20CERTIFICATE-----%5Cn%22%7D%7D%7D";
+
+	var usrstr = "%7B%22name%22:%22loltt%22,%22mspid%22:%22MEDSOSMSP%22,%22roles%22:null,%22affiliation%22:%22%22,%22enrollmentSecret%22:%22%22,%22enrollment%22:%7B%22signingIdentity%22:%22bae7aeca34004cf97f9f09ee4b39262ebd127c8b7206e937a69f3c4227c47a60%22,%22identity%22:%7B%22certificate%22:%22-----BEGIN%20CERTIFICATE-----MIICkjCCAjmgAwIBAgIUQ4VDnI2djAHxezLoIziNdqoa7dIwCgYIKoZIzj0EAwIwdzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xGzAZBgNVBAoTEk1FRFNPUy5leGFtcGxlLmNvbTEeMBwGA1UEAxMVY2EuTUVEU09TLmV4YW1wbGUuY29tMB4XDTE4MDcxOTEyNDIwMFoXDTE5MDcxOTEyNDcwMFowQjEwMA0GA1UECxMGY2xpZW50MAsGA1UECxMEb3JnMTASBgNVBAsTC2RlcGFydG1lbnQxMQ4wDAYDVQQDEwVsb2x0dDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABGb9c0kyZsoF5yXnX80V+G9g4jjDBIUL+n+nYnAXS4r7BwA7apvm55Is6aXEU8KCYej2dGlBywPXUI6YlPeyjzWjgdcwgdQwDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFGis2YUyfXMhe3EstCYN/5YHId1ZMCsGA1UdIwQkMCKAIN8uPJksogr5AxWkC5lI7JRcoaXb/eeenpRp5i1qT8YLMGgGCCoDBAUGBwgBBFx7ImF0dHJzIjp7ImhmLkFmZmlsaWF0aW9uIjoib3JnMS5kZXBhcnRtZW50MSIsImhmLkVucm9sbG1lbnRJRCI6ImxvbHR0IiwiaGYuVHlwZSI6ImNsaWVudCJ9fTAKBggqhkjOPQQDAgNHADBEAiBXEAz2funfAUq/DkktuZERJpoh90qZFxi8fHfbEDYk4gIge94k8WHA2oNcVd9GaIyVuL5Nf/Ws+HOAyAQyvbznHoY=-----END%20CERTIFICATE-----%22%7D%7D%7D"
+	
+	var usrstr = decodeURI(usrstr);
+
+
+	console.log("usrstr=",usrstr);
+
+	var usr = new User("loltt");
+
+//	console.log("usr=",usr);
+
+	var crypto_suite = Fabric_Client.newCryptoSuite();
+
+	//var privkey = "-----BEGIN PRIVATE KEY-----MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgoj6nXBM7xLsS9wQGkHhiRXHBm/MpM4Bgm9bKbAQJAyuhRANCAARm/XNJMmbKBecl51/NFfhvYOI4wwSFC/p/p2JwF0uK+wcAO2qb5ueSLOmlxFPCgmHo9nRpQcsD11COmJT3so81-----END PRIVATE KEY-----"
+
+	//crypto_suite.importKey(privkey, true);
+
+	var TEST_USER_ENROLLMENT = {
+		"name": "loltt",
+		"mspid": "MEDSOSMSP",
+		"roles": null,
+		"affiliation": "",
+		"enrollmentSecret": "",
+		"enrollment": {
+		  "signingIdentity": "bae7aeca34004cf97f9f09ee4b39262ebd127c8b7206e937a69f3c4227c47a60",
+		  "identity": {
+			"certificate": "-----BEGIN CERTIFICATE-----MIICkjCCAjmgAwIBAgIUQ4VDnI2djAHxezLoIziNdqoa7dIwCgYIKoZIzj0EAwIwdzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xGzAZBgNVBAoTEk1FRFNPUy5leGFtcGxlLmNvbTEeMBwGA1UEAxMVY2EuTUVEU09TLmV4YW1wbGUuY29tMB4XDTE4MDcxOTEyNDIwMFoXDTE5MDcxOTEyNDcwMFowQjEwMA0GA1UECxMGY2xpZW50MAsGA1UECxMEb3JnMTASBgNVBAsTC2RlcGFydG1lbnQxMQ4wDAYDVQQDEwVsb2x0dDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABGb9c0kyZsoF5yXnX80V+G9g4jjDBIUL+n+nYnAXS4r7BwA7apvm55Is6aXEU8KCYej2dGlBywPXUI6YlPeyjzWjgdcwgdQwDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFGis2YUyfXMhe3EstCYN/5YHId1ZMCsGA1UdIwQkMCKAIN8uPJksogr5AxWkC5lI7JRcoaXb/eeenpRp5i1qT8YLMGgGCCoDBAUGBwgBBFx7ImF0dHJzIjp7ImhmLkFmZmlsaWF0aW9uIjoib3JnMS5kZXBhcnRtZW50MSIsImhmLkVucm9sbG1lbnRJRCI6ImxvbHR0IiwiaGYuVHlwZSI6ImNsaWVudCJ9fTAKBggqhkjOPQQDAgNHADBEAiBXEAz2funfAUq/DkktuZERJpoh90qZFxi8fHfbEDYk4gIge94k8WHA2oNcVd9GaIyVuL5Nf/Ws+HOAyAQyvbznHoY=-----END CERTIFICATE-----"
+		  }
+		}
+	  }
+	usr.setCryptoSuite(crypto_suite);
+
+
+//	console.log("usr=",usr);
+	usr.fromString(JSON.stringify(TEST_USER_ENROLLMENT), true);
+
+
+//	console.log("usr=",usr);
+
+	fabric_client.setUserContext(usr, true);
+	
 	tx_id = fabric_client.newTransactionID();
 	console.log("Assigning transaction_id: ", tx_id._transaction_id);
 
@@ -65,15 +116,14 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	var request = {
 		//targets: let default to the peer assigned to the client
 		chaincodeId: 'fabcar',
-		fcn: 'set',
-		args: ['lol', 'lol'],
+		fcn: 'get',
+		args: ['a'],
 		chainId: 'ptwist',
 		txId: tx_id
 	};
 
 	// send the transaction proposal to the peers
-	return channel.sendTransactionProposal(request);
-}).then((results) => {
+	channel.sendTransactionProposal(request).then((results) => {
 	var proposalResponses = results[0];
 	var proposal = results[1];
 	let isProposalGood = false;
@@ -86,8 +136,8 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 		}
 	if (isProposalGood) {
 		console.log(util.format(
-			'Successfully sent Proposal and received ProposalResponse: Status - %s, message - "%s"',
-			proposalResponses[0].response.status, proposalResponses[0].response.message));
+			'Successfully sent Proposal and received ProposalResponse: Status - %s, message - "%s", payload : %s',
+			proposalResponses[0].response.status, proposalResponses[0].response.message, proposalResponses[0].response.payload));
 
 		// build up the request for the orderer to have the transaction committed
 		var request = {

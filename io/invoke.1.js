@@ -193,7 +193,7 @@ return Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	status = 500;
 }).then(() => {
 	//console.log(util.format( '{status : "%s", response : "%s", message : "%s" }', status, response, message));
-	ret = util.format( '{status : "%s", payload : "%s", message : "%s" }', status, payload, message);
+	ret = util.format( '{"status" : "%s", "payload" : "%s", "message" : "%s" }', status, payload, message);
 	console.log(ret);
 	return ret;
 });

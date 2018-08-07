@@ -11,7 +11,7 @@
 
 module.exports = {
     cc_query:
-function (identity, request, channel ) {
+function (identity, request, channel, peerAddr, ordererAddr, peerListenerAddr) {
 	console.log("hi");
 	console.log("req", request);
 
@@ -36,7 +36,7 @@ var retur = "";
 
 // setup the fabric network
 var channel = fabric_client.newChannel(channel);
-var peer = fabric_client.newPeer('grpc://localhost:7051');
+var peer = fabric_client.newPeer(peerAddr);
 channel.addPeer(peer);
 
 //
@@ -110,7 +110,7 @@ return Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	//console.error('Failed to query successfully :: ' + err);
 }).then(() => {
 	//console.log(util.format( '{status : "%s", response : "%s", message : "%s" }', status, response, message));
-	ret = util.format( '{status : "%s", response : "%s", message : "%s" }', status, response, message);
+	ret = util.format( '{"status" : "%s", "response" : "%s", "message" : "%s" }', status, response, message);
 	console.log(ret);
 	return ret;
 });

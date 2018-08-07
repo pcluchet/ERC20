@@ -55,14 +55,12 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 
 	// queryCar chaincode function - requires 1 argument, ex: args: ['CAR4'],
 	// queryAllCars chaincode function - requires no arguments , ex: args: [''],
-	/*
 	const request = {
 		//targets : --- letting this default to the peers assigned to the channel
 		chaincodeId: 'fabcar',
-		fcn: 'balanceOf',
-		args: ['lol']
+		fcn: 'get',
+		args: ['a']
 	};
-	*/
 
 	// send the query proposal to the peer
 	return channel.queryByChaincode(request);
