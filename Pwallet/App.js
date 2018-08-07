@@ -5,9 +5,10 @@ import { Text, TextInput, Icon , TouchableOpacity, ScrollView, View, StyleSheet,
 //import { Constants } from 'expo';
 import Swiper from 'react-native-swiper';
 import TimerMixin from 'react-timer-mixin';
+import QRCode from 'react-native-qrcode';
 
 
-const APIURL = "http://192.168.1.79:8000";
+const APIURL = "http://192.168.0.3:8085";
 
 export const getUserBalance = (username) => {
     return fetch(`${APIURL}`, {
@@ -30,6 +31,28 @@ export const getUserBalance = (username) => {
             console.error(error);
         });
 }
+
+export const AuthLogin = (username, pwd) => {
+    return fetch(`${APIURL}/auth`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          password: pwd,
+        }),
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            return responseJson;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
+
 
 export const getAllowancesFrom = (username) => {
     return fetch(`${APIURL}`, {
@@ -153,15 +176,20 @@ export default class App extends Component {
     super(props)
       
     this.interval = setInterval(() => {
-      this.ft_getbalance();
-      this.ft_getAllowancesFrom();
-      this.ft_getAllowancesTo();
+      //this.ft_getbalance();
+      //this.ft_getAllowancesFrom();
+      //this.ft_getAllowancesTo();
     }, 6500);
 
+
+
+
     this.state = {
-      logged : false,
+      password : 'hello',
+      pubkey : 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1DNpAmf0qJ/XN0U1OkFucbGwbOfj7ukvPdnzmnlbi26Sme1MRKspetZNK9+uJpXx4+fjj3kncsSFUIBMaBgOMA==',
+      logged : true,
       name: '',
-      username: '',
+      username: 'john',
       balance: '0',
       transferamount: '', // nom de la bière
       transferfrom: '', // nom de la bière
@@ -393,7 +421,7 @@ export default class App extends Component {
           <TextInput style={styles.textInput}
             placeholder="Password"
             secureTextEntry={true}
-            onChangeText={() => console.log('Password')}>
+            onChangeText={(password) => this.setState({ password })}>
           </TextInput>
         </View>
       </View>
@@ -413,10 +441,49 @@ export default class App extends Component {
 }
 
 
+  qrcode = () => {
+    console.log("PUBKEY = " + this.state.pubkey);
+    return (
+      <View style={styles.container}>
+        <Text style={styles.headerStyle}>My address :</Text>
+
+
+      <View style={styles.qrcodecontainer}>
+      <QRCode style={styles.qrcode}
+          value={this.state.pubkey}
+          size={300}
+          bgColor='black'
+          fgColor='white'/>
+      </View>
+      </View>
+    );
+}
+
+
+
+
+
 Login = () => {
   console.log("login trigger");
   console.log("lop before:" + this.state.logged);
-  this.setState({logged : true});
+  AuthLogin(this.state.username, this.state.password).then(
+    (responseJson) => {
+            console.log("RESPONSE LOGIN = " + JSON.stringify(responseJson));
+            if (responseJson.status == "ok")
+            {
+
+                this.setState({pubkey : responseJson.pubkey});
+                this.setState({logged : true});
+                console.log("Login success, pubkey = " + this.state.pubkey)
+                          
+            }
+            else
+            {
+            alert("Login failed for some reason ❌");
+            console.log("sowhat ?");
+            }
+        })
+
   console.log("logged :" + this.state.logged);
 }
 
@@ -540,6 +607,7 @@ ft_approve = () => {
 
   render() {
      var login = this.login();
+     var qrcode = this.qrcode();
      var logoutButton = this.logoutButton();
      var allowance = this.allowance();
      var balance = this.balance();
@@ -558,6 +626,10 @@ ft_approve = () => {
     return (
       <Swiper style={styles.wrapper} showsButtons={true} showsPagination={false}>
 
+        <View style={styles.slide}>
+          {logoutButton}
+          {qrcode}
+        </View>
         <View style={styles.slide}>
           {logoutButton}
           {balance}
@@ -586,6 +658,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
+    qrcodecontainer: {
+      justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    width: '100%',
+  },
+
   headerStyle: {
     fontSize: 36,
     textAlign: 'center',
@@ -616,6 +695,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#9DD6EB',
+  },
+  qrcode: {
+  //  margin : 'auto',
   },
   scrollview: {
     padding : 20,
