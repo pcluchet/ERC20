@@ -248,6 +248,20 @@ export default class App extends Component {
     this.RefreshContactList();
   }
 
+  notAlreadyIn = (newuser,unparsedlist) => {
+var list = JSON.parse(unparsedlist);
+if (!list)
+    return true;
+var arrayLength = list.length;
+for (var i = 0; i < arrayLength; i++) {
+    if (list[i].username == newuser.username)
+      return false;
+    //Do something
+}
+return true;
+
+  }
+
   addContactFromQR = (data) => {
 
     var scandata = JSON.parse(data);
@@ -267,10 +281,19 @@ export default class App extends Component {
       pubkey : scandata.a,
     }
     if (!obj)
-    obj = new Array();
-    obj.push(newusr);
+     obj = new Array();
+    if (this.notAlreadyIn(newusr,this.state.contactlist))
+    {
+      obj.push(newusr);
+      alert(" User added successfully ");
+    }
+    else
+    {
+      alert(" User not added : already in list ❌ ");
+    }
+    
     console.log("newlist = " + JSON.stringify(obj));
-    this._storeData("@Pwallet:contacts", JSON.stringify(obj));
+    this._storeData("@Pwallet:contacts_"+this.state.username, JSON.stringify(obj));
     this.state.scanningContact = false;
     this.RefreshContactList();
   }
@@ -314,11 +337,11 @@ export default class App extends Component {
 
   transferbtn = (str) => {
     if (this.state.transferPending) {
-      return (<ActivityIndicator size="large" color="#0000ff" style={{textAlign: 'center', fontWeight: '100', marginTop: '10%'}}/>)
+      return (<ActivityIndicator size="large" color="#0000ff" style={{textAlign: 'center', fontWeight: '100', marginTop: '5%'}}/>)
     }
     else {
       return (
-        <Text style={{marginTop: '10%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
+        <Text style={{marginTop: '5%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
           {str}
         </Text>
       )
@@ -328,9 +351,16 @@ export default class App extends Component {
   loadContacts() {
     console.log("CONTACTLIST = " + this.state.contactlist);
     var clist = JSON.parse(this.state.contactlist) ;
+    if (clist )
+    {
     return clist.map(user => (
        <Picker.Item label={user.username} value={user.pubkey} key={user.username}/>
     ))
+  }
+  else
+  {
+    return null;
+  }
   }
   
   
@@ -353,8 +383,13 @@ export default class App extends Component {
         */}
         <View style={{flex: 1, backgroundColor: '#e6e6e6'}}>
         <Picker
+        selectedValue={this.state.selectedUserType}
       onValueChange={(itemValue, itemIndex) => 
-          this.setState({transferto: itemValue})}>
+          {
+            this.setState({selectedUserType: itemValue});
+            this.setState({transferto: itemValue});
+          }
+          }>
       {this.loadContacts()}
     </Picker>
     {/*
@@ -367,7 +402,7 @@ export default class App extends Component {
         </View>
         <View style={{flex: 1, backgroundColor: '#f2f2f2'}}>
           <TextInput style={styles.textInput}
-            placeholder="Tokens"
+            placeholder="Amount"
             onChangeText={(transferamount) => this.setState({ transferamount })}
             value={this.state.transferamount}>
           </TextInput>
@@ -375,7 +410,7 @@ export default class App extends Component {
       </View>
 
       <View style={styles.button}>
-      <View style={{flex: 1, backgroundColor: '#ffc2b3'}}>
+      <View style={{flex: 1, backgroundColor: '#4CB676'}}>
           <TouchableOpacity
           disabled={this.state.transferPending}
           onPress={this.ft_transfer}
@@ -438,9 +473,10 @@ export default class App extends Component {
 
 
         <View style={[{flex: 3}, styles.elementsContainer]}>
-        <View style={{flex: 1, backgroundColor: '#9DD6EB'}}>
+        <View style={{flex: 1, backgroundColor: '#FFFFFF'}}>
           <Text style={styles.textInput}> {this.state.balance} </Text>
         </View>
+        {/*
         <View style={{flex: 1, backgroundColor: '#d9d9d9'}}>
           <Text style={{fontSize: 20, textAlign: 'center', fontWeight: 'bold', marginTop: '2%'}}>
             Allowances From
@@ -461,6 +497,7 @@ export default class App extends Component {
             </Text>
           </ScrollView>
         </View>
+        */}
       </View>
 
 
@@ -549,9 +586,9 @@ export default class App extends Component {
       </View>
 
       <View style={styles.button}>
-      <View style={{flex: 1, backgroundColor: '#ffc2b3'}}>
+      <View style={{flex: 1, backgroundColor: '#4CB676'}}>
           <TouchableOpacity onPress={this.Login }>
-            <Text style={{marginTop: '10%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
+            <Text style={{marginTop: '5%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
               Login
             </Text>
           </TouchableOpacity>
@@ -575,6 +612,7 @@ export default class App extends Component {
   }
   qrcode = () => {
     console.log("PUBKEY = " + this.state.pubkey);
+    console.log("QRDATA = " + this.qrdata());
     return (
       <View style={styles.container}>
         <Text style={styles.headerStyle}>My address :</Text>
@@ -583,7 +621,7 @@ export default class App extends Component {
       <View style={styles.qrcodecontainer}>
       <QRCode style={styles.qrcode}
           value={this.qrdata()}
-          size={300}
+          size={250}
           bgColor='black'
           fgColor='white'/>
       </View>
@@ -598,13 +636,21 @@ RefreshContactList =  () => {
 
   //this._storeData("@Pwallet:contacts",'[{"username" : "john", "pubkey" : "abc" },{"username" : "joe", "pubkey" : "def" } ]');
   var reee;
-      reee = AsyncStorage.getItem("@Pwallet:contacts").then(
+      reee = AsyncStorage.getItem("@Pwallet:contacts_"+this.state.username).then(
         (localdata) => {
   this.setState({"contactlist": localdata});
 
 
         }
       );
+  }
+
+  trimAddr = (pubkey) => {
+    var ret = '';
+    ret += pubkey.substring(0,5);
+    ret += "[...]"
+    ret += pubkey.substring(pubkey.length - 10,pubkey.length);
+    return ret;
   }
 
   ParseContactList = (localdata) => {
@@ -632,7 +678,7 @@ RefreshContactList =  () => {
     ret += 'Username : ' + localcontacts[i].username;
 
     ret = ret.concat("\n");
-    ret += 'Adress : ' + localcontacts[i].pubkey;
+    ret += 'Adress : ' + this.trimAddr(localcontacts[i].pubkey);
     ret = ret.concat("\n\n");
     //ret += '/n';
   }
@@ -671,11 +717,13 @@ other guy
             {myContacts}
           </Text>
           </ScrollView>
+          <View style={{flex: 0.3, backgroundColor: '#4CB676'}}>
             <TouchableOpacity onPress={() => this.setState({ scanningContact : true })}>
-            <Text style={{marginTop: '10%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
-              Add a contact
+            <Text style={{marginTop: '5%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
+              Add an address
             </Text>
           </TouchableOpacity>
+          </View>
       </View>
 
     );
@@ -696,11 +744,13 @@ scancontact = () => {
                 onBarCodeRead={this.onBarCodeRead}
                 aspect={Camera.constants.Aspect.fill}
       ></Camera>
+      <View style={{flex: 0.2, backgroundColor: '#4CB676'}}>
       <TouchableOpacity onPress={() => this.setState({ scanningContact : false })}>
-            <Text style={{marginTop: '10%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
-              Back/Cancel
+            <Text style={{marginTop: '5%', textAlign: 'center', fontSize: 42, fontWeight: '100'}}>
+              Cancel
             </Text>
           </TouchableOpacity>
+      </View>
       </View>
 
     );
@@ -734,6 +784,7 @@ Login = () => {
         })
 
   console.log("logged :" + this.state.logged);
+  this.RefreshContactList();
 }
 
 LogOut = () => {
@@ -742,6 +793,7 @@ LogOut = () => {
   this.setState({logged : false});
   this.setState({balance : 0});
   this.setState({username : ''});
+  this.setState({contactlist : '[]'});
   console.log("logged :" + this.state.logged);
 }
 
@@ -846,7 +898,7 @@ ft_approve = () => {
     return (
           <TouchableOpacity onPress={this.LogOut}>
             <Text style={{marginTop: '10%', textAlign: 'center', fontSize: 21, fontWeight: '100'}}>
-              Username : {this.state.username}
+              Logged in as : {this.state.username}
             </Text>
           </TouchableOpacity>
     );
@@ -888,6 +940,20 @@ ft_approve = () => {
       <Swiper style={styles.wrapper} showsButtons={true} showsPagination={false}>
 
 
+       <View style={styles.slide}>
+          {logoutButton}
+          {balance}
+        </View>
+
+
+
+         <View style={styles.slide}>
+          {logoutButton}
+          {transfer}
+        </View>
+
+
+
         <View style={styles.slide}>
           {logoutButton}
           {contacts}
@@ -897,23 +963,12 @@ ft_approve = () => {
           {logoutButton}
           {qrcode}
         </View>
-        <View style={styles.slide}>
-          {logoutButton}
-          {balance}
-        </View>
-
-{/*
+ {/*
        <View style={styles.slide}>
           {logoutButton}
           {allowance}
         </View>
 */}
-
-         <View style={styles.slide}>
-          {logoutButton}
-          {transfer}
-        </View>
-
 
       </Swiper>
     );
@@ -963,7 +1018,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#9DD6EB',
+    backgroundColor: '#FFFFFF',
   },
   qrcode: {
   //  margin : 'auto',
