@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, TextInput, Icon , TouchableOpacity, ScrollView, View, StyleSheet,
-  ActivityIndicator, AsyncStorage,
+  ActivityIndicator, AsyncStorage, Picker
 } from 'react-native';
 //import { Constants } from 'expo';
 import Swiper from 'react-native-swiper';
@@ -242,7 +242,8 @@ export default class App extends Component {
       allowancesTo: '',
       scanningContact: false,
       BalanceIsLoading: false, // la requête API est-elle en cours ?
-      UserListIsLoading: false // la requête API est-elle en cours ?
+      UserListIsLoading: false, // la requête API est-elle en cours ?
+      contactlist : '[{"username" : "john", "pubkey" : "abc" }]',
     }
     this.RefreshContactList();
   }
@@ -323,6 +324,15 @@ export default class App extends Component {
       )
     }
   }
+
+  loadContacts() {
+    console.log("CONTACTLIST = " + this.state.contactlist);
+    var clist = JSON.parse(this.state.contactlist) ;
+    return clist.map(user => (
+       <Picker.Item label={user.username} value={user.pubkey} key={user.username}/>
+    ))
+  }
+  
   
   transfer = () => {
     return (
@@ -332,6 +342,7 @@ export default class App extends Component {
         </View>
 
         <View style={[{flex: 3}, styles.elementsContainer]}>
+        {/*
         <View style={{flex: 1, backgroundColor: '#d9d9d9'}}>
           <TextInput style={{height: '50%', marginTop: '10%', textAlign: 'center', fontSize: 42, fontWeight: '200'}}
             placeholder="From"
@@ -339,12 +350,20 @@ export default class App extends Component {
             value={this.state.transferfrom}>
           </TextInput>
         </View>
+        */}
         <View style={{flex: 1, backgroundColor: '#e6e6e6'}}>
+        <Picker
+      onValueChange={(itemValue, itemIndex) => 
+          this.setState({transferto: itemValue})}>
+      {this.loadContacts()}
+    </Picker>
+    {/*
           <TextInput style={styles.textInput}
             placeholder="To"
             onChangeText={(transferto) => this.setState({ transferto })}
             value={this.state.transferto}>
           </TextInput>
+    */}
         </View>
         <View style={{flex: 1, backgroundColor: '#f2f2f2'}}>
           <TextInput style={styles.textInput}
@@ -721,6 +740,7 @@ LogOut = () => {
   console.log("logout trigger");
   console.log("lop before:" + this.state.logged);
   this.setState({logged : false});
+  this.setState({balance : 0});
   this.setState({username : ''});
   console.log("logged :" + this.state.logged);
 }
@@ -882,10 +902,12 @@ ft_approve = () => {
           {balance}
         </View>
 
+{/*
        <View style={styles.slide}>
           {logoutButton}
           {allowance}
         </View>
+*/}
 
          <View style={styles.slide}>
           {logoutButton}
